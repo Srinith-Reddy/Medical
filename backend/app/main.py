@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.routers import patients
+from app.routers import organization
 
 
 app = FastAPI(
@@ -10,6 +11,7 @@ app = FastAPI(
 
 
 app.include_router(patients.router)
+app.include_router(organization.router)
 
 
 @app.get("/")
