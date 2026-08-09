@@ -1,44 +1,48 @@
 import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
+import { useEffect, useState } from "react";
+import { getAllPatients } from "../../services/patientService";
+import HealthSummary from "../../components/cards/HealthSummary";
+import HeroCard from "../../components/cards/HeroCard";
+import RecentActivity from "../../components/cards/RecentActivity";
 
 function Dashboard() {
-  return (
-    <div className="flex h-screen bg-slate-100">
-      <Sidebar />
+    const [patients, setPatients] = useState([]);
 
-      <div className="flex-1 flex flex-col">
-        <Navbar />
+    useEffect(() => {
+        loadPatients();
+    }, []);
 
-        <main className="flex-1 bg-slate-100 p-8 overflow-y-auto">
+    const loadPatients = async () => {
+        try {
+            const data = await getAllPatients();
+            // TODO: Replace getAllPatients() with getPatient(patientId)
+            // after authentication is implemented.
+            setPatients(data);
+        } catch (error) {
+            console.error("Error loading patients:", error);
+        }
+    };
 
-            <div className="mb-8">
-                <h1 className="text-4xl font-bold text-slate-800">
-                    Good Evening, Chetana 👋
-                </h1>
+    return (
+        <div className="flex h-screen bg-slate-100">
+            <Sidebar />
 
-                <p className="text-gray-500 mt-2">
-                    Here's your health overview.
-                </p>
+            <div className="flex-1 flex flex-col">
+                <Navbar />
+
+                <main className="flex-1 bg-slate-100 p-8 overflow-y-auto">
+
+                    <HeroCard patient={patients[0]} />
+
+
+                    <HealthSummary patient={patients[0]} />
+                    <RecentActivity />
+
+                </main>
             </div>
-
-            <div className="grid grid-cols-3 gap-6">
-
-                <div className="bg-white rounded-3xl shadow-sm p-6">
-                    Heart Rate
-                </div>
-
-                <div className="bg-white rounded-3xl shadow-sm p-6">
-                    Prescriptions
-                </div>
-
-                <div className="bg-white rounded-3xl shadow-sm p-6">
-                    Reports
-                </div>
-            </div>
-        </main>
-      </div>
-    </div>
-  );
+        </div>
+    );
 }
 
 export default Dashboard;
