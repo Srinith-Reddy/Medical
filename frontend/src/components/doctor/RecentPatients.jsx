@@ -1,35 +1,22 @@
+import { useEffect, useState } from "react";
+import { getAllPatients } from "../../services/patientService";
+
 function RecentPatients() {
 
-    const patients = [
-        {
-            name: "Aarav Sharma",
-            blood: "O+",
-            diagnosis: "Viral Fever",
-            visit: "Today",
-            status: "Recovered"
-        },
-        {
-            name: "Priya Reddy",
-            blood: "B+",
-            diagnosis: "Diabetes",
-            visit: "Yesterday",
-            status: "Monitoring"
-        },
-        {
-            name: "Rahul Kumar",
-            blood: "A+",
-            diagnosis: "Migraine",
-            visit: "3 Aug",
-            status: "Medication"
-        },
-        {
-            name: "Ananya Gupta",
-            blood: "AB+",
-            diagnosis: "Hypertension",
-            visit: "2 Aug",
-            status: "Critical"
+    const [patients, setPatients] = useState([]);
+
+    const loadPatients = async () => {
+        try {
+            const data = await getAllPatients();
+            setPatients(data);
+        } catch (error) {
+            console.error("Error fetching patients:", error);
         }
-    ];
+    };
+
+    useEffect(() => {
+        loadPatients();
+    }, []);
 
     return (
 
@@ -60,19 +47,19 @@ function RecentPatients() {
                             </th>
 
                             <th className="text-left pb-4 font-semibold">
+                                Gender
+                            </th>
+
+                            <th className="text-left pb-4 font-semibold">
                                 Blood Group
                             </th>
 
                             <th className="text-left pb-4 font-semibold">
-                                Diagnosis
+                                Height
                             </th>
 
                             <th className="text-left pb-4 font-semibold">
-                                Last Visit
-                            </th>
-
-                            <th className="text-left pb-4 font-semibold">
-                                Status
+                                Weight
                             </th>
 
                         </tr>
@@ -81,10 +68,10 @@ function RecentPatients() {
 
                     <tbody>
 
-                        {patients.map((patient, index) => (
+                        {patients.map((patient) => (
 
                             <tr
-                                key={index}
+                                key={patient.id}
                                 className="border-b last:border-0 hover:bg-slate-50 transition"
                             >
 
@@ -93,36 +80,19 @@ function RecentPatients() {
                                 </td>
 
                                 <td className="py-5">
-                                    {patient.blood}
+                                    {patient.gender}
                                 </td>
 
                                 <td className="py-5">
-                                    {patient.diagnosis}
-                                </td>
-
-                                <td className="py-5 text-gray-500">
-                                    {patient.visit}
+                                    {patient.blood_group}
                                 </td>
 
                                 <td className="py-5">
+                                    {patient.height} cm
+                                </td>
 
-                                    <span
-                                        className={`px-3 py-1 rounded-full text-sm font-medium
-                                        ${
-                                            patient.status === "Recovered"
-                                                ? "bg-green-100 text-green-700"
-                                                : patient.status === "Monitoring"
-                                                ? "bg-yellow-100 text-yellow-700"
-                                                : patient.status === "Medication"
-                                                ? "bg-blue-100 text-blue-700"
-                                                : "bg-red-100 text-red-700"
-                                        }`}
-                                    >
-
-                                        {patient.status}
-
-                                    </span>
-
+                                <td className="py-5">
+                                    {patient.weight} kg
                                 </td>
 
                             </tr>
