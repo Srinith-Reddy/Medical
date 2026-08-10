@@ -9,6 +9,10 @@ import Patients from "./pages/patients/Patients";
 import AddPatient from "./pages/patients/AddPatient";
 import PatientDetails from "./pages/patients/PatientDetails";
 import EditPatient from "./pages/patients/EditPatient";
+import Records from "./pages/medicalrecords/Records";
+import UploadRecord from "./pages/medicalrecords/UploadRecord";
+import RecordDetails from "./pages/medicalrecords/RecordDetails";
+import PatientProfile from "./pages/patients/PatientProfile";
 
 function App() {
   return (
@@ -41,6 +45,26 @@ function App() {
       <Route
         path="/patients/edit/:id"
         element={<EditPatient />}
+      />
+
+      <Route
+        path="/records"
+        element={<Records />}
+      />
+
+      <Route
+        path="/records/upload"
+        element={<UploadRecord />}
+      />
+
+      <Route
+        path="/records/:id"
+        element={<RecordDetails />}
+      />
+
+      <Route
+        path="/patients/:id"
+        element={<PatientProfile />}
       />
 
 
