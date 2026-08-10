@@ -4,7 +4,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers import patients
 from app.routers import organization
 from app.routers import staff
-
+from app.routers import prescriptions
+from app.routers import consultations
+from app.routers import medicine
 
 app = FastAPI(
     title="Medical Blockchain API",
@@ -27,6 +29,9 @@ app.add_middleware(
 app.include_router(patients.router)
 app.include_router(organization.router)
 app.include_router(staff.router)
+app.include_router(prescriptions.router)
+app.include_router(consultations.router)
+app.include_router(medicine.router)
 
 
 @app.get("/")
