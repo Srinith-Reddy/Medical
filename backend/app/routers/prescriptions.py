@@ -1,0 +1,34 @@
+from fastapi import APIRouter, HTTPException
+
+from app.schemas.prescription import PrescriptionCreate
+from app.services.prescription_service import PrescriptionService
+
+
+router = APIRouter(
+    prefix="/prescriptions",
+    tags=["Prescriptions"]
+)
+
+
+@router.post("")
+def create_prescription(data: PrescriptionCreate):
+    try:
+        return PrescriptionService.create_prescription(
+            patient_id=data.patient_id,
+            organization_id=data.organization_id,
+            staff_id=data.staff_id,
+            consultation_id=data.consultation_id,
+            medicines=data.medicines
+        )
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )

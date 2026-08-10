@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from app.routers import patients
 from app.routers import organization
 from app.routers import staff
-
+from app.routers import prescriptions
 
 app = FastAPI(
     title="Medical Blockchain API",
@@ -14,6 +14,7 @@ app = FastAPI(
 app.include_router(patients.router)
 app.include_router(organization.router)
 app.include_router(staff.router)
+app.include_router(prescriptions.router)
 
 
 @app.get("/")
