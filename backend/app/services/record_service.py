@@ -1,4 +1,14 @@
 from app.db.supabase import supabase
+import hashlib
+
+def calculate_file_hash(file_path: str) -> str:
+    sha256 = hashlib.sha256()
+
+    with open(file_path, "rb") as file:
+        while chunk := file.read(4096):
+            sha256.update(chunk)
+
+    return sha256.hexdigest()
 
 
 class RecordService:
@@ -12,12 +22,15 @@ class RecordService:
         file_path: str,
         consultation_id: str = None
     ):
+        file_hash = RecordService.calculate_file_hash(file_path)
+
         record_data = {
             "patient_id": patient_id,
             "organization_id": organization_id,
             "staff_id": staff_id,
             "record_type": record_type,
-            "file_path": file_path
+            "file_path": file_path,
+            "file_hash": file_hash
         }
 
         if consultation_id:

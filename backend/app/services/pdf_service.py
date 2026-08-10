@@ -11,29 +11,25 @@ class PDFService:
         file_path: str
     ) -> str:
 
-        # Create parent folder if it doesn't exist
         folder = os.path.dirname(file_path)
 
         if folder:
             os.makedirs(folder, exist_ok=True)
 
-        # Create PDF
         pdf = canvas.Canvas(
             file_path,
             pagesize=A4
         )
 
         width, height = A4
-
         y = height - 50
+
+        data = prescription["prescription"]
+        medicines = prescription["medicines"]
 
         # Title
         pdf.setFont("Helvetica-Bold", 18)
-        pdf.drawString(
-            50,
-            y,
-            "Medical Prescription"
-        )
+        pdf.drawString(50, y, "Medical Prescription")
 
         y -= 40
 
@@ -41,92 +37,53 @@ class PDFService:
         pdf.setFont("Helvetica", 11)
 
         pdf.drawString(
-            50,
-            y,
-            f"Prescription ID: {prescription['id']}"
+            50, y,
+            f"Prescription ID: {data['id']}"
         )
-
         y -= 20
 
         pdf.drawString(
-            50,
-            y,
-            f"Patient ID: {prescription['patient_id']}"
+            50, y,
+            f"Patient ID: {data['patient_id']}"
         )
-
         y -= 20
 
         pdf.drawString(
-            50,
-            y,
-            f"Organization ID: {prescription['organization_id']}"
+            50, y,
+            f"Staff ID: {data['staff_id']}"
         )
-
         y -= 20
 
         pdf.drawString(
-            50,
-            y,
-            f"Staff ID: {prescription['staff_id']}"
+            50, y,
+            f"Consultation ID: {data['consultation_id']}"
         )
-
-        y -= 20
-
-        pdf.drawString(
-            50,
-            y,
-            f"Consultation ID: {prescription['consultation_id']}"
-        )
-
         y -= 30
 
-        # Optional prescription notes
-        if prescription.get("notes"):
-
+        # Notes
+        if data.get("notes"):
             pdf.setFont("Helvetica-Bold", 12)
-
-            pdf.drawString(
-                50,
-                y,
-                "Notes:"
-            )
-
+            pdf.drawString(50, y, "Notes:")
             y -= 20
 
             pdf.setFont("Helvetica", 11)
-
-            pdf.drawString(
-                50,
-                y,
-                prescription["notes"]
-            )
-
+            pdf.drawString(50, y, data["notes"])
             y -= 30
 
         # Medicines
         pdf.setFont("Helvetica-Bold", 13)
-
-        pdf.drawString(
-            50,
-            y,
-            "Medicines"
-        )
-
+        pdf.drawString(50, y, "Medicines")
         y -= 25
 
         pdf.setFont("Helvetica", 11)
 
-        for index, medicine in enumerate(
-            prescription.get("medicines", []),
-            start=1
-        ):
+        for index, medicine in enumerate(medicines, start=1):
 
             pdf.drawString(
                 50,
                 y,
-                f"{index}. Medicine: {medicine['medicine_id']}"
+                f"{index}. Medicine ID: {medicine['medicine_id']}"
             )
-
             y -= 18
 
             pdf.drawString(
@@ -134,7 +91,6 @@ class PDFService:
                 y,
                 f"Dosage: {medicine['dosage']}"
             )
-
             y -= 18
 
             pdf.drawString(
@@ -142,7 +98,6 @@ class PDFService:
                 y,
                 f"Quantity: {medicine['quantity']}"
             )
-
             y -= 18
 
             pdf.drawString(
@@ -150,10 +105,8 @@ class PDFService:
                 y,
                 f"Instructions: {medicine['instructions']}"
             )
-
             y -= 30
 
-            # Create another page if necessary
             if y < 80:
                 pdf.showPage()
                 y = height - 50
