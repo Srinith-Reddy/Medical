@@ -24,6 +24,21 @@ function Dashboard() {
         }
     };
 
+    const loadOrganizations = async () => {
+        try {
+            console.log("Loading organizations...");
+
+            const data = await getAllOrganizations();
+
+            console.log("Received data:", data);
+
+            setOrganizations(data);
+
+        } catch (error) {
+        console.error("API Error:", error);
+        }
+    };
+
     return (
         <div className="flex h-screen bg-slate-100">
             <Sidebar />
