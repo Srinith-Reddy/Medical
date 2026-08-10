@@ -7,6 +7,8 @@ from app.routers import staff
 from app.routers import prescriptions
 from app.routers import consultations
 from app.routers import medicine
+from app.routers import access
+from app.routers import appointment
 
 app = FastAPI(
     title="Medical Blockchain API",
@@ -32,7 +34,8 @@ app.include_router(staff.router)
 app.include_router(prescriptions.router)
 app.include_router(consultations.router)
 app.include_router(medicine.router)
-
+app.include_router(access.router)
+app.include_router(appointment.router)
 
 @app.get("/")
 def health_check():

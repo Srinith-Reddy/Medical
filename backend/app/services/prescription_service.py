@@ -61,3 +61,34 @@ class PrescriptionService:
             "prescription": prescription,
             "medicines": items_response.data
         }
+
+    @staticmethod
+    def get_prescription(prescription_id: str):
+        # Get prescription
+        prescription_response = (
+            supabase
+            .table("prescriptions")
+            .select("*")
+            .eq("id", prescription_id)
+            .single()
+            .execute()
+        )
+
+        if not prescription_response.data:
+            raise ValueError("Prescription not found")
+
+        prescription = prescription_response.data
+
+        # Get medicines belonging to this prescription
+        items_response = (
+            supabase
+            .table("prescription_items")
+            .select("*")
+            .eq("prescription_id", prescription_id)
+            .execute()
+        )
+
+        return {
+            "prescription": prescription,
+            "medicines": items_response.data
+        }
