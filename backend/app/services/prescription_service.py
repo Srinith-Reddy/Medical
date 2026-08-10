@@ -1,4 +1,3 @@
-from app.services.record_service import RecordService
 from app.db.supabase import supabase
 
 
@@ -9,33 +8,42 @@ class PrescriptionService:
         patient_id: str,
         organization_id: str,
         staff_id: str,
-        medicines: list,
-        consultation_id: str = None
+        consultation_id: str,
+        medicines: list
     ):
-        # 1. Create a medical record for the prescription
-        record = RecordService.create_record(
-            patient_id=patient_id,
-            organization_id=organization_id,
-            staff_id=staff_id,
-            record_type="PRESCRIPTION",
-            consultation_id=consultation_id
+        # 1. Create prescription
+        prescription_data = {
+            "patient_id": patient_id,
+            "organization_id": organization_id,
+            "staff_id": staff_id,
+            "consultation_id": consultation_id
+        }
+
+        prescription_response = (
+            supabase
+            .table("prescriptions")
+            .insert(prescription_data)
+            .execute()
         )
 
-        record_id = record["id"]
+        if not prescription_response.data:
+            raise ValueError("Failed to create prescription")
 
-        # 2. Prepare prescription medicines
+        prescription = prescription_response.data[0]
+        prescription_id = prescription["id"]
+
+        # 2. Add medicines
         prescription_items = []
 
         for medicine in medicines:
             prescription_items.append({
-                "record_id": record_id,
+                "prescription_id": prescription_id,
                 "medicine_id": medicine["medicine_id"],
                 "dosage": medicine["dosage"],
                 "quantity": medicine["quantity"],
                 "instructions": medicine["instructions"]
             })
 
-        # 3. Add medicines to prescription
         items_response = (
             supabase
             .table("prescription_items")
@@ -48,8 +56,8 @@ class PrescriptionService:
                 "Failed to add prescription medicines"
             )
 
-        # 4. Return complete prescription
+        # 3. Return complete prescription
         return {
-            "prescription": record,
+            "prescription": prescription,
             "medicines": items_response.data
         }

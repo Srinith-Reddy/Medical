@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import Optional
 
 
 class PrescriptionMedicine(BaseModel):
@@ -13,5 +12,5 @@ class PrescriptionCreate(BaseModel):
     patient_id: str
     organization_id: str
     staff_id: str
-    consultation_id: Optional[str] = None
+    consultation_id: str
     medicines: list[PrescriptionMedicine]
