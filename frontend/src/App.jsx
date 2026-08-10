@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/dashboard/Dashboard";
 import OrganizationDashboard from "./pages/organization/OrganizationDashboard";
 import OrganizationDetails from "./pages/organization/OrganizationDetails";
+import DoctorDashboard from "./pages/dashboard/DoctorDashboard";
+import LabDashboard from "./pages/dashboard/LabDashboard";
 
 function App() {
   return (
@@ -24,7 +26,10 @@ function App() {
         element={<OrganizationDetails />}
       />
 
-      
+      <Route path="/doctor" element={<DoctorDashboard />} />
+      <Route path="/lab" element={<LabDashboard />} />
+
+
     </Routes>
   );
 }

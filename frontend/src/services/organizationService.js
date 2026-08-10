@@ -5,7 +5,7 @@ const API = axios.create({
 });
 
 export const getAllOrganizations = async () => {
-    const response = await API.get("/organizations");
+    const response = await API.get("/organizations/");
     return response.data;
 };
 
