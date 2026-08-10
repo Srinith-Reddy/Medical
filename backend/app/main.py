@@ -1,8 +1,9 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import patients
 from app.routers import organization
+from app.routers import staff
+
 
 app = FastAPI(
     title="Medical Blockchain API",
@@ -24,7 +25,11 @@ app.add_middleware(
 
 app.include_router(patients.router)
 app.include_router(organization.router)
+app.include_router(staff.router)
+
 
 @app.get("/")
 def health_check():
-    return {"message": "Medical Blockchain API is running"}
+    return {
+        "message": "Medical Blockchain API is running"
+    }
