@@ -13,4 +13,5 @@ class PrescriptionCreate(BaseModel):
     organization_id: str
     staff_id: str
     consultation_id: str
+    notes: str | None = None
     medicines: list[PrescriptionMedicine]

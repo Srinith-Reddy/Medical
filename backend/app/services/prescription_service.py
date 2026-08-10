@@ -9,14 +9,18 @@ class PrescriptionService:
         organization_id: str,
         staff_id: str,
         consultation_id: str,
-        medicines: list
+        medicines: list,
+        notes: str | None = None
+
     ):
         # 1. Create prescription
         prescription_data = {
             "patient_id": patient_id,
             "organization_id": organization_id,
             "staff_id": staff_id,
-            "consultation_id": consultation_id
+            "consultation_id": consultation_id,
+            "notes": notes
+            
         }
 
         prescription_response = (
