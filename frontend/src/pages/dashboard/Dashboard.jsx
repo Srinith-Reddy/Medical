@@ -1,63 +1,68 @@
-import Sidebar from "../../components/sidebar/Sidebar";
+import PatientSidebar from "../../components/sidebar/PatientSidebar";
 import Navbar from "../../components/navbar/Navbar";
 import { useEffect, useState } from "react";
 import { getAllPatients } from "../../services/patientService";
-import HealthSummary from "../../components/cards/HealthSummary";
+
 import HeroCard from "../../components/cards/HeroCard";
+import HealthSummary from "../../components/cards/HealthSummary";
 import RecentActivity from "../../components/cards/RecentActivity";
 
 function Dashboard() {
-    const [patients, setPatients] = useState([]);
+
+    const [patient, setPatient] = useState(null);
 
     useEffect(() => {
-        loadPatients();
+        loadPatient();
     }, []);
 
-    const loadPatients = async () => {
+    const loadPatient = async () => {
+
         try {
+
             const data = await getAllPatients();
-            // TODO: Replace getAllPatients() with getPatient(patientId)
-            // after authentication is implemented.
-            setPatients(data);
-        } catch (error) {
-            console.error("Error loading patients:", error);
-        }
-    };
 
-    const loadOrganizations = async () => {
-        try {
-            console.log("Loading organizations...");
-
-            const data = await getAllOrganizations();
-
-            console.log("Received data:", data);
-
-            setOrganizations(data);
+            // Temporary:
+            // Using the first patient until login/authentication is implemented.
+            setPatient(data[0]);
 
         } catch (error) {
-        console.error("API Error:", error);
+
+            console.error("Error loading patient:", error);
+
         }
+
     };
 
     return (
+
         <div className="flex h-screen bg-slate-100">
-            <Sidebar />
+
+            <PatientSidebar />
 
             <div className="flex-1 flex flex-col">
-                <Navbar />
+
+                {/* ✅ Pass patient to Navbar */}
+                <Navbar patient={patient} />
 
                 <main className="flex-1 bg-slate-100 p-8 overflow-y-auto">
 
-                    <HeroCard patient={patients[0]} />
+                    {/* Hero Section */}
+                    <HeroCard patient={patient} />
 
+                    {/* Health Summary */}
+                    <HealthSummary patient={patient} />
 
-                    <HealthSummary patient={patients[0]} />
-                    <RecentActivity />
+                    {/* Recent Activity */}
+                    <RecentActivity patient={patient} />
 
                 </main>
+
             </div>
+
         </div>
+
     );
+
 }
 
 export default Dashboard;

@@ -6,6 +6,7 @@ import { getAllPatients } from "../../services/patientService";
 function PatientTable({ searchTerm }) {
 
     const [patients, setPatients] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const navigate = useNavigate();
 
@@ -21,6 +22,10 @@ function PatientTable({ searchTerm }) {
 
             console.error("Error fetching patients:", error);
 
+        } finally {
+
+            setLoading(false);
+
         }
 
     };
@@ -34,8 +39,22 @@ function PatientTable({ searchTerm }) {
     const filteredPatients = patients.filter((patient) =>
         patient.name
             .toLowerCase()
-            .includes(searchTerm.toLowerCase())
+            .includes((searchTerm || "").toLowerCase())
     );
+
+    if (loading) {
+
+        return (
+
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 text-center text-gray-500">
+
+                Loading patients...
+
+            </div>
+
+        );
+
+    }
 
     return (
 
@@ -164,7 +183,9 @@ function PatientTable({ searchTerm }) {
                                 colSpan="7"
                                 className="text-center py-10 text-gray-500"
                             >
+
                                 No patients found.
+
                             </td>
 
                         </tr>

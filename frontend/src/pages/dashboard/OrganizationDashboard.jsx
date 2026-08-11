@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import OrganizationSidebar from "../../components/sidebar/OrganizationSidebar";
+
 import { getAllOrganizations } from "../../services/organizationService";
 
 import OrganizationHero from "../../components/organization/OrganizationHero";
@@ -10,6 +13,7 @@ import SearchBar from "../../components/organization/SearchBar";
 import FilterChips from "../../components/organization/FilterChips";
 
 function OrganizationDashboard() {
+
     const navigate = useNavigate();
 
     const [organizations, setOrganizations] = useState([]);
@@ -21,12 +25,19 @@ function OrganizationDashboard() {
     }, []);
 
     const loadOrganizations = async () => {
+
         try {
+
             const data = await getAllOrganizations();
+
             setOrganizations(data);
+
         } catch (error) {
+
             console.error(error);
+
         }
+
     };
 
     const filteredOrganizations = organizations.filter((organization) => {
@@ -45,7 +56,10 @@ function OrganizationDashboard() {
     });
 
     return (
-        <div className="min-h-screen bg-[#F6F8FB] px-10 py-8">
+
+        <DashboardLayout
+            sidebar={<OrganizationSidebar />}
+        >
 
             {/* Hero Section */}
 
@@ -118,8 +132,10 @@ function OrganizationDashboard() {
 
             </div>
 
-        </div>
+        </DashboardLayout>
+
     );
+
 }
 
 export default OrganizationDashboard;

@@ -4,9 +4,16 @@ import TestQueue from "../../components/lab/TestQueue";
 import UrgentSamples from "../../components/lab/UrgentSamples";
 import RecentReports from "../../components/lab/RecentReports";
 
+import DashboardLayout from "../../components/layout/DashboardLayout";
+import LabSidebar from "../../components/sidebar/LabSidebar";
+
 function LabDashboard() {
+
     return (
-        <div className="min-h-screen bg-slate-100 p-8">
+
+        <DashboardLayout
+            sidebar={<LabSidebar />}
+        >
 
             <LabHero />
 
@@ -15,19 +22,25 @@ function LabDashboard() {
             <div className="grid grid-cols-3 gap-6 mt-8">
 
                 <div className="col-span-2">
+
                     <TestQueue />
+
                 </div>
 
                 <div>
+
                     <UrgentSamples />
+
                 </div>
 
             </div>
 
             <RecentReports />
 
-        </div>
+        </DashboardLayout>
+
     );
+
 }
 
 export default LabDashboard;

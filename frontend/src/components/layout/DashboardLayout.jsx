@@ -1,13 +1,12 @@
-import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 
-function DashboardLayout({ children }) {
+function DashboardLayout({ children, sidebar }) {
 
     return (
 
-        <div className="flex bg-slate-100">
+        <div className="flex bg-slate-100 min-h-screen">
 
-            <Sidebar />
+            {sidebar}
 
             <div className="flex-1 p-8">
 
