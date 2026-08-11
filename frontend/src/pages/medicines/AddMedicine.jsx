@@ -1,19 +1,30 @@
 import DashboardLayout from "../../components/layout/DashboardLayout";
+import MedicineForm from "../../components/medicines/MedicineForm";
 
-function Records() {
+function AddMedicine() {
+
     return (
+
         <DashboardLayout>
-            <div className="p-8">
+
+            <div className="mb-8">
+
                 <h1 className="text-4xl font-bold text-slate-800">
-                    Medical Records
+                    Add Medicine
                 </h1>
 
                 <p className="text-gray-500 mt-2">
-                    Medical Records module is under development.
+                    Register a new medicine into the hospital inventory.
                 </p>
+
             </div>
+
+            <MedicineForm />
+
         </DashboardLayout>
+
     );
+
 }
 
-export default Records;
+export default AddMedicine;

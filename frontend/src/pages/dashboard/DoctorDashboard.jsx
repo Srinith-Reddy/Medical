@@ -5,6 +5,7 @@ import RecentPatients from "../../components/doctor/RecentPatients";
 import MedicalAlerts from "../../components/doctor/MedicalAlerts";
 
 import DashboardLayout from "../../components/layout/DashboardLayout";
+import DoctorSidebar from "../../components/sidebar/DoctorSidebar";
 
 import { useEffect, useState } from "react";
 import { getDoctors } from "../../services/doctorService";
@@ -23,9 +24,7 @@ function DoctorDashboard() {
 
             setDoctors(data);
 
-        }
-
-        catch (error) {
+        } catch (error) {
 
             console.error("Error fetching doctors:", error);
 
@@ -39,11 +38,11 @@ function DoctorDashboard() {
 
     }, []);
 
-    console.log("Doctors:", doctors);
-
     return (
 
-        <DashboardLayout>
+        <DashboardLayout
+            sidebar={<DoctorSidebar />}
+        >
 
             <DoctorHero doctor={doctors[0]} />
 

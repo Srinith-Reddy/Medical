@@ -13,7 +13,7 @@ function Sidebar() {
         {
             name: "Dashboard",
             icon: LayoutDashboard,
-            path: "/doctor"
+            path: "/patient"
         },
         {
             name: "Patients",
@@ -38,12 +38,17 @@ function Sidebar() {
     ];
 
     return (
-
         <aside className="w-64 bg-white shadow-lg min-h-screen">
 
-            <div className="p-6 text-2xl font-bold text-blue-600 border-b">
+            <div className="p-6 border-b">
 
-                MedChain
+                <h1 className="text-3xl font-bold text-blue-600">
+                    MedChain
+                </h1>
+
+                <p className="text-sm text-gray-500 mt-1">
+                    Patient Portal
+                </p>
 
             </div>
 
@@ -59,17 +64,18 @@ function Sidebar() {
                             key={item.name}
                             to={item.path}
                             className={({ isActive }) =>
-                                `flex items-center gap-3 rounded-xl px-4 py-3 transition ${
+                                `flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
                                     isActive
-                                        ? "bg-blue-600 text-white"
-                                        : "hover:bg-slate-100 text-slate-700"
+                                        ? "bg-blue-600 text-white shadow-md"
+                                        : "text-slate-700 hover:bg-slate-100"
                                 }`
                             }
                         >
-
                             <Icon size={20} />
 
-                            {item.name}
+                            <span className="font-medium">
+                                {item.name}
+                            </span>
 
                         </NavLink>
 
@@ -80,9 +86,7 @@ function Sidebar() {
             </nav>
 
         </aside>
-
     );
-
 }
 
 export default Sidebar;
