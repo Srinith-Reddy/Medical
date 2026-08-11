@@ -18,7 +18,8 @@ def create_prescription(data: PrescriptionCreate):
             organization_id=data.organization_id,
             staff_id=data.staff_id,
             consultation_id=data.consultation_id,
-            medicines=[medicine.model_dump() for medicine in data.medicines]
+            medicines=[medicine.model_dump() for medicine in data.medicines],
+            notes=data.notes,
         )
 
     except ValueError as e:

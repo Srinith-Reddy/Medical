@@ -1,4 +1,6 @@
 from app.db.supabase import supabase
+from app.services.pdf_service import PDFService
+from app.services.record_service import RecordService
 
 
 class PrescriptionService:
@@ -9,14 +11,18 @@ class PrescriptionService:
         organization_id: str,
         staff_id: str,
         consultation_id: str,
-        medicines: list
+        medicines: list,
+        notes: str | None = None
+
     ):
         # 1. Create prescription
         prescription_data = {
             "patient_id": patient_id,
             "organization_id": organization_id,
             "staff_id": staff_id,
-            "consultation_id": consultation_id
+            "consultation_id": consultation_id,
+            "notes": notes
+            
         }
 
         prescription_response = (
@@ -56,10 +62,35 @@ class PrescriptionService:
                 "Failed to add prescription medicines"
             )
 
+        complete_prescription = {
+            "prescription": prescription,
+            "medicines": items_response.data
+        }
+
+        file_path = (
+            f"generated_records/"
+            f"prescription_{prescription_id}.pdf"
+        )
+
+        PDFService.generate_prescription_pdf(
+            complete_prescription,
+            file_path
+        )
+
+        record = RecordService.create_record(
+            patient_id=patient_id,
+            organization_id=organization_id,
+            staff_id=staff_id,
+            consultation_id=consultation_id,
+            record_type="PRESCRIPTION",
+            file_path=file_path
+        )
+
         # 3. Return complete prescription
         return {
             "prescription": prescription,
-            "medicines": items_response.data
+            "medicines": items_response.data,
+            "record": record
         }
 
     @staticmethod
@@ -89,6 +120,6 @@ class PrescriptionService:
         )
 
         return {
-            "prescription": prescription,
-            "medicines": items_response.data
+        "prescription": prescription,
+        "medicines": items_response.data
         }
