@@ -52,3 +52,14 @@ def get_prescription(prescription_id: str):
             status_code=500,
             detail=str(e)
         )
+
+@router.get("/patient/{patient_id}")
+def get_patient_prescriptions(patient_id: str):
+    try:
+        return PrescriptionService.get_patient_prescriptions(patient_id)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )

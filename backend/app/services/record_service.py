@@ -1,6 +1,6 @@
 from app.db.supabase import supabase
 import hashlib
-
+from app.services.blockchain_service import BlockchainService
 
 
 
@@ -25,6 +25,9 @@ class RecordService:
         consultation_id: str = None
     ):
         file_hash = RecordService.calculate_file_hash(file_path)
+        blockchain_tx_hash = BlockchainService.store_hash(
+            file_hash
+        )
 
         record_data = {
             "patient_id": patient_id,
@@ -32,7 +35,8 @@ class RecordService:
             "staff_id": staff_id,
             "record_type": record_type,
             "file_path": file_path,
-            "file_hash": file_hash
+            "file_hash": file_hash,
+            "blockchain_tx_hash": blockchain_tx_hash
         }
 
         if consultation_id:

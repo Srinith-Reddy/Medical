@@ -123,3 +123,35 @@ class PrescriptionService:
         "prescription": prescription,
         "medicines": items_response.data
         }
+    @staticmethod
+    def get_patient_prescriptions(patient_id: str):
+        prescriptions_response = (
+            supabase
+            .table("prescriptions")
+            .select("*")
+            .eq("patient_id", patient_id)
+            .order("created_at", desc=True)
+            .execute()
+        )
+
+        prescriptions = prescriptions_response.data
+
+        result = []
+
+        for prescription in prescriptions:
+            prescription_id = prescription["id"]
+
+            items_response = (
+                supabase
+                .table("prescription_items")
+                .select("*")
+                .eq("prescription_id", prescription_id)
+                .execute()
+            )
+
+            result.append({
+                "prescription": prescription,
+                "medicines": items_response.data
+            })
+
+        return result
