@@ -19,6 +19,10 @@ import Medicines from "./pages/medicines/Medicines";
 import AddMedicine from "./pages/medicines/AddMedicine";
 import MedicineDetails from "./pages/medicines/MedicineDetails";
 
+import Prescriptions from "./pages/prescriptions/Prescriptions";
+import AddPrescription from "./pages/prescriptions/AddPrescription";
+import PrescriptionDetails from "./pages/prescriptions/PrescriptionDetails";
+
 function App() {
     return (
         <Routes>
@@ -105,6 +109,15 @@ function App() {
             <Route
               path="/medicines/:id"
               element={<MedicineDetails />}
+            />
+
+            <Route path="/prescriptions" element={<Prescriptions />} />
+
+            <Route path="/add-prescription" element={<AddPrescription />} />
+
+            <Route
+              path="/prescriptions/:id"
+              element={<PrescriptionDetails />}
             />
 
         </Routes>
