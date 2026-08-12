@@ -23,6 +23,8 @@ import Prescriptions from "./pages/prescriptions/Prescriptions";
 import AddPrescription from "./pages/prescriptions/AddPrescription";
 import PrescriptionDetails from "./pages/prescriptions/PrescriptionDetails";
 
+import BookAppointment from "./pages/appointments/BookAppointment";
+
 function App() {
     return (
         <Routes>
@@ -119,6 +121,8 @@ function App() {
               path="/prescriptions/:id"
               element={<PrescriptionDetails />}
             />
+
+            <Route path="/appointments/book" element={<BookAppointment />} />
 
         </Routes>
     );
