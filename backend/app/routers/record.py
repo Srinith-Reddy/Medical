@@ -67,3 +67,21 @@ def get_record(record_id: str):
             status_code=500,
             detail=str(e)
         )
+
+@router.get("/{record_id}/verify")
+def verify_record(record_id: str):
+
+    try:
+        return RecordService.verify_record(record_id)
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=404,
+            detail=str(e)
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
