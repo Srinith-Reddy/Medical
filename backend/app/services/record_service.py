@@ -82,3 +82,47 @@ class RecordService:
         )
 
         return response.data
+
+    @staticmethod
+    def verify_record(record_id: str):
+
+    # Get the record from Supabase
+        response = (
+            supabase
+            .table("records")
+            .select("*")
+            .eq("id", record_id)
+            .single()
+            .execute()
+        )
+
+        if not response.data:
+            raise ValueError("Medical record not found")
+
+        record = response.data
+
+        # Calculate hash of the current file
+        current_hash = RecordService.calculate_file_hash(
+            record["file_path"]
+        )
+
+        # Compare with the hash originally stored in DB
+        hash_matches = (
+            current_hash == record["file_hash"]
+        )
+
+        # Verify the hash on blockchain
+        blockchain_verified = BlockchainService.verify_hash(
+            current_hash
+        )
+
+        return {
+            "record_id": record_id,
+            "original_hash": record["file_hash"],
+            "current_hash": current_hash,
+            "hash_matches": hash_matches,
+            "blockchain_verified": blockchain_verified,
+            "verified": (
+                hash_matches and blockchain_verified
+            )
+        }
