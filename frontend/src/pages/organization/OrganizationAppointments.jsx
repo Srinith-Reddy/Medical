@@ -10,10 +10,16 @@ import {
     updateAppointmentStatus
 } from "../../services/appointmentService";
 
+import { getDoctors } from "../../services/doctorService";
+import { getAllPatients } from "../../services/patientService";
+
 
 function OrganizationAppointments() {
 
     const [appointments, setAppointments] = useState([]);
+
+    const [patients, setPatients] = useState([]);
+    const [doctors, setDoctors] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -22,13 +28,11 @@ function OrganizationAppointments() {
 
 
     // --------------------------------------------------
-    // LOAD APPOINTMENTS
+    // LOAD APPOINTMENTS + PATIENTS + DOCTORS
     // --------------------------------------------------
 
     useEffect(() => {
-
         loadAppointments();
-
     }, []);
 
 
@@ -39,12 +43,14 @@ function OrganizationAppointments() {
             setLoading(true);
             setError("");
 
+
             // Get organizations
             const organizations =
                 await getAllOrganizations();
 
 
             // Temporary until authentication is implemented
+            // First organization = current organization
             const currentOrganization =
                 organizations[0];
 
@@ -52,20 +58,57 @@ function OrganizationAppointments() {
             if (!currentOrganization?.id) {
 
                 setAppointments([]);
+                setDoctors([]);
+                setPatients([]);
 
                 return;
 
             }
 
 
-            // Get appointments for current organization
-            const data =
-                await getOrganizationAppointments(
+            // Get appointments, doctors and patients
+            const [
+                appointmentsData,
+                doctorsData,
+                patientsData
+            ] = await Promise.all([
+
+                getOrganizationAppointments(
                     currentOrganization.id
-                );
+                ),
+
+                getDoctors(
+                    currentOrganization.id
+                ),
+
+                getAllPatients()
+
+            ]);
 
 
-            setAppointments(data || []);
+            console.log(
+                "APPOINTMENTS FROM API:",
+                appointmentsData
+            );
+
+            console.log(
+                "DOCTORS FROM API:",
+                doctorsData
+            );
+
+
+            setAppointments(
+                appointmentsData || []
+            );
+
+            setDoctors(
+                doctorsData || []
+            );
+
+            setPatients(
+                patientsData || []
+            );
+
 
         } catch (error) {
 
@@ -88,6 +131,87 @@ function OrganizationAppointments() {
 
 
     // --------------------------------------------------
+    // GET PATIENT NAME
+    // --------------------------------------------------
+
+    const getPatientName = (patientId) => {
+
+        const patient = patients.find(
+            (patient) =>
+                String(patient.id) === String(patientId)
+        );
+
+        return patient?.name || "Patient";
+
+    };
+
+
+    // --------------------------------------------------
+    // GET DOCTOR NAME
+    // --------------------------------------------------
+
+    const getDoctorName = (appointment) => {
+
+        /*
+         * First check whether the appointment itself
+         * already contains doctor information.
+         */
+
+        if (appointment?.doctor?.name) {
+            return appointment.doctor.name;
+        }
+
+
+        /*
+         * Get the doctor ID from the appointment.
+         */
+
+        const doctorId =
+            appointment?.doctor_id ||
+            appointment?.doctorId ||
+            appointment?.doctor?.id;
+
+
+        if (!doctorId) {
+
+            console.log(
+                "No doctor ID found for appointment:",
+                appointment
+            );
+
+            return "Not assigned";
+
+        }
+
+
+        /*
+         * Match appointment doctor ID
+         * with the doctors returned by the API.
+         */
+
+        const doctor = doctors.find(
+            (doctor) =>
+                String(doctor.id) === String(doctorId)
+        );
+
+
+        console.log(
+            "Appointment doctor ID:",
+            doctorId
+        );
+
+        console.log(
+            "Matched doctor:",
+            doctor
+        );
+
+
+        return doctor?.name || "Not assigned";
+
+    };
+
+
+    // --------------------------------------------------
     // FORMAT DATE
     // --------------------------------------------------
 
@@ -97,27 +221,46 @@ function OrganizationAppointments() {
             return "--";
         }
 
-        return new Date(date).toLocaleString("en-IN", {
-
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-
-            hour: "2-digit",
-            minute: "2-digit",
-
-        });
+        return new Date(date).toLocaleDateString(
+            "en-IN",
+            {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }
+        );
 
     };
 
 
     // --------------------------------------------------
-    // CHECK WHETHER APPOINTMENT TIME HAS ARRIVED
+    // FORMAT TIME
+    // --------------------------------------------------
+
+    const formatTime = (date) => {
+
+        if (!date) {
+            return "--";
+        }
+
+        return new Date(date).toLocaleTimeString(
+            "en-IN",
+            {
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+
+    };
+
+
+    // --------------------------------------------------
+    // CHECK WHETHER APPOINTMENT TIME HAS PASSED
     // --------------------------------------------------
 
     const canMarkVisited = (appointment) => {
 
-        if (!appointment.appointment_date) {
+        if (!appointment?.appointment_date) {
             return false;
         }
 
@@ -138,27 +281,18 @@ function OrganizationAppointments() {
         switch (status?.toUpperCase()) {
 
             case "SCHEDULED":
-
                 return "bg-green-50 text-green-700";
 
-
             case "VISITED":
-
                 return "bg-blue-50 text-blue-700";
 
-
             case "COMPLETED":
-
                 return "bg-purple-50 text-purple-700";
 
-
             case "CANCELLED":
-
                 return "bg-red-50 text-red-700";
 
-
             default:
-
                 return "bg-slate-100 text-slate-600";
 
         }
@@ -174,7 +308,9 @@ function OrganizationAppointments() {
 
         try {
 
-            setUpdatingAppointment(appointmentId);
+            setUpdatingAppointment(
+                appointmentId
+            );
 
 
             const updatedAppointment =
@@ -184,20 +320,19 @@ function OrganizationAppointments() {
                 );
 
 
-            // Update appointment in UI
-            setAppointments((currentAppointments) =>
+            setAppointments(
+                (currentAppointments) =>
 
-                currentAppointments.map((appointment) =>
+                    currentAppointments.map(
+                        (appointment) =>
 
-                    appointment.id === appointmentId
-
-                        ? updatedAppointment
-
-                        : appointment
-
-                )
+                            appointment.id === appointmentId
+                                ? updatedAppointment
+                                : appointment
+                    )
 
             );
+
 
         } catch (error) {
 
@@ -224,7 +359,6 @@ function OrganizationAppointments() {
         <DashboardLayout
             sidebar={<OrganizationSidebar />}
         >
-
 
             {/* --------------------------------------------------
                 HEADER
@@ -384,286 +518,255 @@ function OrganizationAppointments() {
 
                     </div>
 
-                )}
+            )}
 
 
             {/* --------------------------------------------------
-                APPOINTMENTS
+                APPOINTMENT LIST
             -------------------------------------------------- */}
 
             {!loading &&
                 !error &&
                 appointments.length > 0 && (
 
-                    <div className="space-y-4">
+                    <div className="space-y-3">
 
-                        {appointments.map((appointment) => (
+                        {appointments.map(
+                            (appointment) => (
 
-                            <div
-                                key={appointment.id}
-                                className="
-                                    bg-white
-                                    rounded-2xl
-                                    border
-                                    border-slate-200
-                                    p-6
-                                    shadow-sm
-                                    hover:shadow-md
-                                    transition
-                                "
-                            >
+                                <div
+                                    key={appointment.id}
+                                    className="
+                                        bg-white
+                                        rounded-2xl
+                                        border
+                                        border-slate-200
+                                        p-4
+                                        shadow-sm
+                                        hover:shadow-md
+                                        transition
+                                    "
+                                >
 
-                                {/* TOP ROW */}
-
-                                <div className="
-                                    flex
-                                    items-center
-                                    justify-between
-                                    gap-4
-                                ">
-
-
-                                    <div>
-
-                                        <p className="
-                                            text-sm
-                                            text-slate-500
-                                        ">
-                                            Appointment
-                                        </p>
-
-
-                                        <h2 className="
-                                            text-lg
-                                            font-semibold
-                                            text-slate-900
-                                            mt-1
-                                        ">
-                                            {formatDate(
-                                                appointment.appointment_date
-                                            )}
-                                        </h2>
-
-                                    </div>
-
-
-                                    {/* STATUS */}
-
-                                    <span
-                                        className={`
-                                            px-3
-                                            py-1.5
-                                            rounded-full
-                                            text-xs
-                                            font-medium
-                                            ${getStatusStyle(
-                                                appointment.status
-                                            )}
-                                        `}
-                                    >
-                                        {appointment.status || "UNKNOWN"}
-                                    </span>
-
-                                </div>
-
-
-                                {/* DETAILS */}
-
-                                <div className="
-                                    grid
-                                    grid-cols-1
-                                    md:grid-cols-3
-                                    gap-4
-                                    mt-6
-                                ">
-
-
-                                    {/* APPOINTMENT ID */}
+                                    {/* TOP ROW */}
 
                                     <div className="
-                                        bg-slate-50
-                                        rounded-xl
-                                        p-4
+                                        flex
+                                        items-center
+                                        justify-between
+                                        gap-4
                                     ">
 
-                                        <p className="
-                                            text-xs
-                                            text-slate-500
-                                            uppercase
-                                            tracking-wide
-                                        ">
-                                            Appointment ID
-                                        </p>
+                                        <div>
+
+                                            <p className="
+                                                text-lg
+                                                font-semibold
+                                                text-slate-900
+                                            ">
+                                                {formatDate(
+                                                    appointment.appointment_date
+                                                )}
+                                            </p>
 
 
-                                        <p className="
-                                            text-sm
-                                            font-medium
-                                            text-slate-900
-                                            mt-1
-                                            break-all
-                                        ">
-                                            {appointment.id || "--"}
-                                        </p>
+                                            <p className="
+                                                text-sm
+                                                text-slate-500
+                                                mt-1
+                                            ">
+                                                {formatTime(
+                                                    appointment.appointment_date
+                                                )}
+                                            </p>
+
+                                        </div>
+
+
+                                        {/* STATUS */}
+
+                                        <span
+                                            className={`
+                                                px-3
+                                                py-1.5
+                                                rounded-full
+                                                text-xs
+                                                font-medium
+                                                ${getStatusStyle(
+                                                    appointment.status
+                                                )}
+                                            `}
+                                        >
+                                            {appointment.status || "UNKNOWN"}
+                                        </span>
 
                                     </div>
 
 
-                                    {/* PATIENT */}
+                                    {/* PATIENT + DOCTOR */}
 
                                     <div className="
-                                        bg-slate-50
-                                        rounded-xl
-                                        p-4
+                                        grid
+                                        grid-cols-1
+                                        md:grid-cols-2
+                                        gap-3
+                                        mt-3
                                     ">
 
-                                        <p className="
-                                            text-xs
-                                            text-slate-500
-                                            uppercase
-                                            tracking-wide
-                                        ">
-                                            Patient
-                                        </p>
-
-
-                                        <p className="
-                                            text-sm
-                                            font-medium
-                                            text-slate-900
-                                            mt-1
-                                            break-all
-                                        ">
-                                            {appointment.patient_id || "--"}
-                                        </p>
-
-                                    </div>
-
-
-                                    {/* DOCTOR */}
-
-                                    <div className="
-                                        bg-slate-50
-                                        rounded-xl
-                                        p-4
-                                    ">
-
-                                        <p className="
-                                            text-xs
-                                            text-slate-500
-                                            uppercase
-                                            tracking-wide
-                                        ">
-                                            Doctor
-                                        </p>
-
-
-                                        <p className="
-                                            text-sm
-                                            font-medium
-                                            text-slate-900
-                                            mt-1
-                                            break-all
-                                        ">
-                                            {appointment.doctor_id || "--"}
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-
-                                {/* --------------------------------------------------
-                                    MARK VISITED BUTTON
-                                -------------------------------------------------- */}
-
-                                {appointment.status?.toUpperCase() ===
-                                    "SCHEDULED" &&
-
-                                    canMarkVisited(appointment) && (
+                                        {/* PATIENT */}
 
                                         <div className="
-                                            mt-6
-                                            flex
-                                            justify-end
+                                            bg-slate-50
+                                            rounded-xl
+                                            p-3
                                         ">
 
-                                            <button
-                                                onClick={() =>
-                                                    handleMarkVisited(
+                                            <p className="
+                                                text-xs
+                                                text-slate-500
+                                                uppercase
+                                                tracking-wide
+                                            ">
+                                                Patient
+                                            </p>
+
+
+                                            <p className="
+                                                text-base
+                                                font-semibold
+                                                text-slate-900
+                                                mt-1
+                                            ">
+                                                {getPatientName(
+                                                    appointment.patient_id
+                                                )}
+                                            </p>
+
+                                        </div>
+
+
+                                        {/* DOCTOR */}
+
+                                        <div className="
+                                            bg-slate-50
+                                            rounded-xl
+                                            p-3
+                                        ">
+
+                                            <p className="
+                                                text-xs
+                                                text-slate-500
+                                                uppercase
+                                                tracking-wide
+                                            ">
+                                                Doctor
+                                            </p>
+
+
+                                            <p className="
+                                                text-base
+                                                font-semibold
+                                                text-slate-900
+                                                mt-1
+                                            ">
+                                                {getDoctorName(
+                                                    appointment
+                                                )}
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    {/* MARK VISITED */}
+
+                                    {appointment.status?.toUpperCase() ===
+                                        "SCHEDULED" &&
+
+                                        canMarkVisited(appointment) && (
+
+                                            <div className="
+                                                mt-3
+                                                flex
+                                                justify-end
+                                            ">
+
+                                                <button
+                                                    onClick={() =>
+                                                        handleMarkVisited(
+                                                            appointment.id
+                                                        )
+                                                    }
+                                                    disabled={
+                                                        updatingAppointment ===
                                                         appointment.id
-                                                    )
-                                                }
-                                                disabled={
-                                                    updatingAppointment ===
+                                                    }
+                                                    className="
+                                                        px-4
+                                                        py-2
+                                                        rounded-xl
+                                                        bg-blue-600
+                                                        text-white
+                                                        text-sm
+                                                        font-medium
+                                                        hover:bg-blue-700
+                                                        disabled:opacity-50
+                                                        disabled:cursor-not-allowed
+                                                        transition
+                                                    "
+                                                >
+
+                                                    {updatingAppointment ===
                                                     appointment.id
-                                                }
-                                                className="
-                                                    px-5
-                                                    py-2.5
-                                                    rounded-xl
-                                                    bg-blue-600
-                                                    text-white
+
+                                                        ? "Updating..."
+
+                                                        : "Mark as Visited"}
+
+                                                </button>
+
+                                            </div>
+
+                                    )}
+
+
+                                    {/* VISITED */}
+
+                                    {appointment.status?.toUpperCase() ===
+                                        "VISITED" && (
+
+                                            <div className="
+                                                mt-3
+                                                flex
+                                                justify-end
+                                            ">
+
+                                                <span className="
                                                     text-sm
                                                     font-medium
-                                                    hover:bg-blue-700
-                                                    disabled:opacity-50
-                                                    disabled:cursor-not-allowed
-                                                    transition
-                                                "
-                                            >
+                                                    text-blue-600
+                                                ">
+                                                    ✓ Patient visited
+                                                </span>
 
-                                                {updatingAppointment ===
-                                                appointment.id
-
-                                                    ? "Updating..."
-
-                                                    : "Mark as Visited"}
-
-                                            </button>
-
-                                        </div>
+                                            </div>
 
                                     )}
 
+                                </div>
 
-                                {/* VISITED MESSAGE */}
-
-                                {appointment.status?.toUpperCase() ===
-                                    "VISITED" && (
-
-                                        <div className="
-                                            mt-5
-                                            flex
-                                            items-center
-                                            justify-end
-                                        ">
-
-                                            <span className="
-                                                text-sm
-                                                font-medium
-                                                text-blue-600
-                                            ">
-                                                ✓ Patient visited
-                                            </span>
-
-                                        </div>
-
-                                    )}
-
-                            </div>
-
-                        ))}
+                            )
+                        )}
 
                     </div>
 
-                )}
+            )}
 
         </DashboardLayout>
 
     );
 
 }
-
 
 export default OrganizationAppointments;
