@@ -99,3 +99,16 @@ class PatientService:
         )
 
         return response.data
+
+    @staticmethod
+    def get_patients_by_organization(organization_id: str):
+
+        response = (
+            supabase
+            .table("patients")
+            .select("*")
+            .eq("organization_id", organization_id)
+            .execute()
+        )
+
+        return response.data

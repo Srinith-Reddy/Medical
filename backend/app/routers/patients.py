@@ -76,4 +76,11 @@ def update_patient(
         updates
     )
 
+    @router.get("/organization/{organization_id}")
+    def get_patients_by_organization(organization_id: str):
+
+        return PatientService.get_patients_by_organization(
+            organization_id
+        )
+
     return result[0]
