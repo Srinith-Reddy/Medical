@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/dashboard/Dashboard";
 import OrganizationDashboard from "./pages/dashboard/OrganizationDashboard";
 import OrganizationDetails from "./pages/organization/OrganizationDetails";
+import Organizations from "./pages/organization/Organizations";
 import DoctorDashboard from "./pages/dashboard/DoctorDashboard";
 import LabDashboard from "./pages/dashboard/LabDashboard";
 
@@ -24,6 +25,8 @@ import AddPrescription from "./pages/prescriptions/AddPrescription";
 import PrescriptionDetails from "./pages/prescriptions/PrescriptionDetails";
 
 import BookAppointment from "./pages/appointments/BookAppointment";
+import OrganizationDoctors from "./pages/organization/OrganizationDoctors";
+import OrganizationAppointments from "./pages/organization/OrganizationAppointments";
 
 function App() {
     return (
@@ -52,6 +55,11 @@ function App() {
             />
 
             <Route
+              path="/organization/appointments"
+              element={<OrganizationAppointments />}
+            />
+
+            <Route
                 path="/organization"
                 element={<OrganizationDashboard />}
             />
@@ -59,6 +67,11 @@ function App() {
             <Route
                 path="/organization/:id"
                 element={<OrganizationDetails />}
+            />
+
+            <Route
+                path="/organizations"
+                element={<Organizations />}
             />
 
             {/* Patients */}
@@ -123,6 +136,11 @@ function App() {
             />
 
             <Route path="/appointments/book" element={<BookAppointment />} />
+
+            <Route
+              path="/organization/doctors"
+              element={<OrganizationDoctors />}
+            />
 
         </Routes>
     );

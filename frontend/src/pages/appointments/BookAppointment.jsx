@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { getAllOrganizations } from "../../services/organizationService";
 import { getAllPatients } from "../../services/patientService";
 import { createAppointment } from "../../services/appointmentService";
 
+
 function BookAppointment() {
+
+    const navigate = useNavigate();
 
     const [organizations, setOrganizations] = useState([]);
     const [patient, setPatient] = useState(null);
@@ -16,9 +20,15 @@ function BookAppointment() {
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
 
+
+    // --------------------------------------------------
+    // LOAD PATIENT + ORGANIZATIONS
+    // --------------------------------------------------
+
     useEffect(() => {
         loadData();
     }, []);
+
 
     const loadData = async () => {
 
@@ -37,12 +47,23 @@ function BookAppointment() {
 
         } catch (error) {
 
-            console.error("Failed to load appointment data:", error);
-            setError("Unable to load appointment details.");
+            console.error(
+                "Failed to load appointment data:",
+                error
+            );
+
+            setError(
+                "Unable to load appointment details."
+            );
 
         }
 
     };
+
+
+    // --------------------------------------------------
+    // BOOK APPOINTMENT
+    // --------------------------------------------------
 
     const handleSubmit = async (e) => {
 
@@ -51,45 +72,79 @@ function BookAppointment() {
         setMessage("");
         setError("");
 
+
         if (!patient) {
-            setError("Patient information could not be loaded.");
+
+            setError(
+                "Patient information could not be loaded."
+            );
+
             return;
+
         }
 
+
         if (!organizationId || !appointmentDate) {
-            setError("Please select a hospital and appointment date.");
+
+            setError(
+                "Please select a hospital and appointment date."
+            );
+
             return;
+
         }
+
 
         try {
 
             setLoading(true);
 
+
             const appointmentData = {
+
                 patient_id: patient.id,
+
                 organization_id: organizationId,
+
                 appointment_date:
                     new Date(appointmentDate).toISOString(),
+
                 status: "SCHEDULED",
+
             };
 
-            console.log("Creating appointment:", appointmentData);
+
+            console.log(
+                "Creating appointment:",
+                appointmentData
+            );
+
 
             await createAppointment(appointmentData);
 
-            setMessage("Appointment booked successfully.");
+
+            setMessage(
+                "Appointment booked successfully."
+            );
+
 
             setOrganizationId("");
             setAppointmentDate("");
 
+
         } catch (error) {
 
-            console.error("Failed to book appointment:", error);
+            console.error(
+                "Failed to book appointment:",
+                error
+            );
+
 
             setError(
                 error.response?.data?.detail ||
                 "Failed to book appointment. Please try again."
             );
+
 
         } finally {
 
@@ -99,11 +154,13 @@ function BookAppointment() {
 
     };
 
+
     return (
 
         <div className="min-h-screen bg-slate-50 px-6 py-10">
 
             <div className="max-w-2xl mx-auto">
+
 
                 {/* Header */}
 
@@ -124,9 +181,10 @@ function BookAppointment() {
                 </div>
 
 
-                {/* Appointment Card */}
+                {/* Card */}
 
                 <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-7">
+
 
                     {/* Patient */}
 
@@ -251,20 +309,47 @@ function BookAppointment() {
                     )}
 
 
-                    {/* Submit */}
+                    {/* Buttons */}
 
-                    <button
-                        type="button"
-                        onClick={handleSubmit}
-                        disabled={loading || !patient}
-                        className="w-full bg-slate-900 text-white rounded-xl py-3.5 font-medium hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
+                    <div className="flex gap-3">
 
-                        {loading
-                            ? "Booking Appointment..."
-                            : "Confirm Appointment"}
+                        <button
+                            type="button"
+                            onClick={() => navigate("/patient")}
+                            className="w-1/3 border border-slate-300 text-slate-700 rounded-xl py-3.5 font-medium hover:bg-slate-50 transition"
+                        >
+                            Cancel
+                        </button>
 
-                    </button>
+
+                        <button
+                            type="button"
+                            onClick={handleSubmit}
+                            disabled={loading || !patient}
+                            className="flex-1 bg-slate-900 text-white rounded-xl py-3.5 font-medium hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+
+                            {loading
+                                ? "Booking Appointment..."
+                                : "Confirm Appointment"}
+
+                        </button>
+
+                    </div>
+
+
+                    {/* Return to dashboard after success */}
+
+                    {message && (
+
+                        <button
+                            onClick={() => navigate("/patient")}
+                            className="w-full mt-4 text-sm font-medium text-blue-600 hover:text-blue-700"
+                        >
+                            View my appointments →
+                        </button>
+
+                    )}
 
                 </div>
 

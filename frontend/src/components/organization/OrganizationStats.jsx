@@ -1,72 +1,77 @@
-function OrganizationStats({ organizations }) {
+function OrganizationStats({
+    doctorCount = 0,
+    appointmentCount = 0,
+}) {
 
-  const total = organizations.length;
+    const cards = [
 
-  const hospitals = organizations.filter(
-    org => org.type === "Hospital"
-  ).length;
+        {
+            title: "Doctors",
+            value: doctorCount,
+            color: "bg-blue-100 text-blue-600",
+        },
 
-  const clinics = organizations.filter(
-    org => org.type === "Clinic"
-  ).length;
+        {
+            title: "Appointments",
+            value: appointmentCount,
+            color: "bg-sky-100 text-sky-600",
+        },
 
-  const labs = organizations.filter(
-    org => org.type === "Laboratory"
-  ).length;
+    ];
 
-  const cards = [
-    {
-      title: "Total Organizations",
-      value: total,
-      color: "bg-blue-100 text-blue-600",
-    },
-    {
-      title: "Hospitals",
-      value: hospitals,
-      color: "bg-sky-100 text-sky-600",
-    },
-    {
-      title: "Clinics",
-      value: clinics,
-      color: "bg-indigo-100 text-indigo-600",
-    },
-    {
-      title: "Laboratories",
-      value: labs,
-      color: "bg-cyan-100 text-cyan-600",
-    },
-  ];
 
-  return (
+    return (
 
-    <div className="grid grid-cols-4 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      {cards.map((card) => (
+            {cards.map((card) => (
 
-        <div
-          key={card.title}
-          className="bg-white rounded-[28px] shadow-sm p-6 border border-gray-200"
-        >
+                <div
+                    key={card.title}
+                    className="
+                        bg-white
+                        rounded-[28px]
+                        border
+                        border-slate-200
+                        p-7
+                        shadow-sm
+                        hover:shadow-md
+                        transition
+                    "
+                >
 
-          <div
-            className={`w-12 h-12 rounded-2xl ${card.color}`}
-          ></div>
+                    <div
+                        className={`
+                            w-12
+                            h-12
+                            rounded-2xl
+                            flex
+                            items-center
+                            justify-center
+                            ${card.color}
+                        `}
+                    >
+                        <div className="w-3 h-3 rounded-full bg-current" />
+                    </div>
 
-          <p className="mt-5 text-gray-500">
-            {card.title}
-          </p>
 
-          <h2 className="text-4xl font-bold mt-2">
-            {card.value}
-          </h2>
+                    <p className="mt-5 text-slate-500 text-sm">
+                        {card.title}
+                    </p>
+
+
+                    <h2 className="text-4xl font-bold mt-2 text-slate-900">
+                        {card.value}
+                    </h2>
+
+                </div>
+
+            ))}
 
         </div>
 
-      ))}
+    );
 
-    </div>
-
-  );
 }
 
 export default OrganizationStats;

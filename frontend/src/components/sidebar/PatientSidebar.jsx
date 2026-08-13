@@ -2,12 +2,13 @@ import { NavLink } from "react-router-dom";
 import {
     LayoutDashboard,
     Users,
+    CalendarPlus,
     FileText,
     ClipboardList,
     Settings
 } from "lucide-react";
 
-function Sidebar() {
+function PatientSidebar() {
 
     const menu = [
         {
@@ -19,6 +20,11 @@ function Sidebar() {
             name: "Patients",
             icon: Users,
             path: "/patients"
+        },
+        {
+            name: "Book Appointment",
+            icon: CalendarPlus,
+            path: "/appointments/book"
         },
         {
             name: "Medical Records",
@@ -40,7 +46,9 @@ function Sidebar() {
     return (
         <aside className="w-64 bg-white shadow-lg min-h-screen">
 
-            <div className="p-6 border-b">
+            {/* Logo */}
+
+            <div className="h-20 px-6 flex flex-col justify-center border-b">
 
                 <h1 className="text-3xl font-bold text-blue-600">
                     MedChain
@@ -51,6 +59,9 @@ function Sidebar() {
                 </p>
 
             </div>
+
+
+            {/* Navigation */}
 
             <nav className="mt-8 space-y-2 px-4">
 
@@ -71,6 +82,7 @@ function Sidebar() {
                                 }`
                             }
                         >
+
                             <Icon size={20} />
 
                             <span className="font-medium">
@@ -89,4 +101,4 @@ function Sidebar() {
     );
 }
 
-export default Sidebar;
+export default PatientSidebar;
