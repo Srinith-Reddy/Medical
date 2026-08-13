@@ -1,4 +1,26 @@
 function HeroCard({ patient }) {
+
+  const getGreeting = () => {
+
+    const hour = Number(
+      new Intl.DateTimeFormat("en-IN", {
+        timeZone: "Asia/Kolkata",
+        hour: "numeric",
+        hour12: false,
+      }).format(new Date())
+    );
+
+    if (hour < 12) {
+      return "Good morning";
+    }
+
+    if (hour < 17) {
+      return "Good afternoon";
+    }
+
+    return "Good evening";
+  };
+
   return (
     <div className="bg-white rounded-[28px] p-8 shadow-sm border border-gray-200 mb-8">
 
@@ -11,7 +33,7 @@ function HeroCard({ patient }) {
         </p>
 
         <h1 className="text-4xl font-bold text-gray-900 mt-2">
-          Good Evening, {patient?.name || "Patient"} 👋
+          {getGreeting()}, {patient?.name || "Patient"}
         </h1>
 
         <p className="text-gray-500 mt-4 text-lg">
