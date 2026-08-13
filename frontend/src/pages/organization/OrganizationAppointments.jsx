@@ -4,7 +4,12 @@ import DashboardLayout from "../../components/layout/DashboardLayout";
 import OrganizationSidebar from "../../components/sidebar/OrganizationSidebar";
 
 import { getAllOrganizations } from "../../services/organizationService";
-import { getOrganizationAppointments } from "../../services/appointmentService";
+
+import {
+    getOrganizationAppointments,
+    updateAppointmentStatus
+} from "../../services/appointmentService";
+
 
 function OrganizationAppointments() {
 
@@ -13,12 +18,17 @@ function OrganizationAppointments() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
+    const [updatingAppointment, setUpdatingAppointment] = useState(null);
+
+
     // --------------------------------------------------
-    // LOAD ORGANIZATION APPOINTMENTS
+    // LOAD APPOINTMENTS
     // --------------------------------------------------
 
     useEffect(() => {
+
         loadAppointments();
+
     }, []);
 
 
@@ -33,6 +43,7 @@ function OrganizationAppointments() {
             const organizations =
                 await getAllOrganizations();
 
+
             // Temporary until authentication is implemented
             const currentOrganization =
                 organizations[0];
@@ -43,10 +54,11 @@ function OrganizationAppointments() {
                 setAppointments([]);
 
                 return;
+
             }
 
 
-            // Get appointments belonging to this organization
+            // Get appointments for current organization
             const data =
                 await getOrganizationAppointments(
                     currentOrganization.id
@@ -58,7 +70,7 @@ function OrganizationAppointments() {
         } catch (error) {
 
             console.error(
-                "Failed to load organization appointments:",
+                "Failed to load appointments:",
                 error
             );
 
@@ -86,12 +98,33 @@ function OrganizationAppointments() {
         }
 
         return new Date(date).toLocaleString("en-IN", {
+
             day: "2-digit",
             month: "short",
             year: "numeric",
+
             hour: "2-digit",
             minute: "2-digit",
+
         });
+
+    };
+
+
+    // --------------------------------------------------
+    // CHECK WHETHER APPOINTMENT TIME HAS ARRIVED
+    // --------------------------------------------------
+
+    const canMarkVisited = (appointment) => {
+
+        if (!appointment.appointment_date) {
+            return false;
+        }
+
+        return (
+            new Date() >=
+            new Date(appointment.appointment_date)
+        );
 
     };
 
@@ -105,16 +138,81 @@ function OrganizationAppointments() {
         switch (status?.toUpperCase()) {
 
             case "SCHEDULED":
+
                 return "bg-green-50 text-green-700";
 
-            case "COMPLETED":
+
+            case "VISITED":
+
                 return "bg-blue-50 text-blue-700";
 
+
+            case "COMPLETED":
+
+                return "bg-purple-50 text-purple-700";
+
+
             case "CANCELLED":
+
                 return "bg-red-50 text-red-700";
 
+
             default:
+
                 return "bg-slate-100 text-slate-600";
+
+        }
+
+    };
+
+
+    // --------------------------------------------------
+    // MARK APPOINTMENT AS VISITED
+    // --------------------------------------------------
+
+    const handleMarkVisited = async (appointmentId) => {
+
+        try {
+
+            setUpdatingAppointment(appointmentId);
+
+
+            const updatedAppointment =
+                await updateAppointmentStatus(
+                    appointmentId,
+                    "VISITED"
+                );
+
+
+            // Update appointment in UI
+            setAppointments((currentAppointments) =>
+
+                currentAppointments.map((appointment) =>
+
+                    appointment.id === appointmentId
+
+                        ? updatedAppointment
+
+                        : appointment
+
+                )
+
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Failed to mark appointment as visited:",
+                error
+            );
+
+            alert(
+                "Unable to mark appointment as visited."
+            );
+
+        } finally {
+
+            setUpdatingAppointment(null);
 
         }
 
@@ -127,21 +225,38 @@ function OrganizationAppointments() {
             sidebar={<OrganizationSidebar />}
         >
 
+
             {/* --------------------------------------------------
-                PAGE HEADER
+                HEADER
             -------------------------------------------------- */}
 
             <div className="mb-8">
 
-                <p className="text-sm uppercase tracking-[0.2em] text-blue-600 font-medium">
+                <p className="
+                    text-sm
+                    uppercase
+                    tracking-[0.2em]
+                    text-blue-600
+                    font-medium
+                ">
                     ORGANIZATION PORTAL
                 </p>
 
-                <h1 className="text-4xl font-bold text-slate-900 mt-2">
+
+                <h1 className="
+                    text-4xl
+                    font-bold
+                    text-slate-900
+                    mt-2
+                ">
                     Appointments
                 </h1>
 
-                <p className="text-slate-500 mt-2">
+
+                <p className="
+                    text-slate-500
+                    mt-2
+                ">
                     View and manage appointments for your organization.
                 </p>
 
@@ -154,7 +269,14 @@ function OrganizationAppointments() {
 
             {loading && (
 
-                <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
+                <div className="
+                    bg-white
+                    rounded-2xl
+                    border
+                    border-slate-200
+                    p-8
+                    text-center
+                ">
 
                     <p className="text-slate-500">
                         Loading appointments...
@@ -171,11 +293,19 @@ function OrganizationAppointments() {
 
             {!loading && error && (
 
-                <div className="bg-white rounded-2xl border border-red-200 p-8 text-center">
+                <div className="
+                    bg-white
+                    rounded-2xl
+                    border
+                    border-red-200
+                    p-8
+                    text-center
+                ">
 
                     <p className="text-red-600">
                         {error}
                     </p>
+
 
                     <button
                         onClick={loadAppointments}
@@ -201,24 +331,53 @@ function OrganizationAppointments() {
 
 
             {/* --------------------------------------------------
-                NO APPOINTMENTS
+                EMPTY STATE
             -------------------------------------------------- */}
 
             {!loading &&
                 !error &&
                 appointments.length === 0 && (
 
-                    <div className="bg-white rounded-2xl border border-slate-200 p-10 text-center">
+                    <div className="
+                        bg-white
+                        rounded-2xl
+                        border
+                        border-slate-200
+                        p-10
+                        text-center
+                    ">
 
-                        <div className="w-14 h-14 mx-auto rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 text-2xl">
+                        <div className="
+                            w-14
+                            h-14
+                            mx-auto
+                            rounded-2xl
+                            bg-blue-50
+                            flex
+                            items-center
+                            justify-center
+                            text-blue-600
+                            text-2xl
+                        ">
                             📅
                         </div>
 
-                        <h2 className="text-lg font-semibold text-slate-900 mt-5">
+
+                        <h2 className="
+                            text-lg
+                            font-semibold
+                            text-slate-900
+                            mt-5
+                        ">
                             No appointments yet
                         </h2>
 
-                        <p className="text-sm text-slate-500 mt-2">
+
+                        <p className="
+                            text-sm
+                            text-slate-500
+                            mt-2
+                        ">
                             There are currently no appointments
                             for this organization.
                         </p>
@@ -229,7 +388,7 @@ function OrganizationAppointments() {
 
 
             {/* --------------------------------------------------
-                APPOINTMENT LIST
+                APPOINTMENTS
             -------------------------------------------------- */}
 
             {!loading &&
@@ -254,17 +413,32 @@ function OrganizationAppointments() {
                                 "
                             >
 
-                                <div className="flex items-center justify-between">
+                                {/* TOP ROW */}
 
-                                    {/* Appointment information */}
+                                <div className="
+                                    flex
+                                    items-center
+                                    justify-between
+                                    gap-4
+                                ">
+
 
                                     <div>
 
-                                        <p className="text-sm text-slate-500">
+                                        <p className="
+                                            text-sm
+                                            text-slate-500
+                                        ">
                                             Appointment
                                         </p>
 
-                                        <h2 className="text-lg font-semibold text-slate-900 mt-1">
+
+                                        <h2 className="
+                                            text-lg
+                                            font-semibold
+                                            text-slate-900
+                                            mt-1
+                                        ">
                                             {formatDate(
                                                 appointment.appointment_date
                                             )}
@@ -273,7 +447,7 @@ function OrganizationAppointments() {
                                     </div>
 
 
-                                    {/* Status */}
+                                    {/* STATUS */}
 
                                     <span
                                         className={`
@@ -293,49 +467,189 @@ function OrganizationAppointments() {
                                 </div>
 
 
-                                {/* Additional information */}
+                                {/* DETAILS */}
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                                <div className="
+                                    grid
+                                    grid-cols-1
+                                    md:grid-cols-3
+                                    gap-4
+                                    mt-6
+                                ">
 
-                                    <div className="bg-slate-50 rounded-xl p-4">
 
-                                        <p className="text-xs text-slate-500 uppercase tracking-wide">
+                                    {/* APPOINTMENT ID */}
+
+                                    <div className="
+                                        bg-slate-50
+                                        rounded-xl
+                                        p-4
+                                    ">
+
+                                        <p className="
+                                            text-xs
+                                            text-slate-500
+                                            uppercase
+                                            tracking-wide
+                                        ">
                                             Appointment ID
                                         </p>
 
-                                        <p className="text-sm font-medium text-slate-900 mt-1 break-all">
+
+                                        <p className="
+                                            text-sm
+                                            font-medium
+                                            text-slate-900
+                                            mt-1
+                                            break-all
+                                        ">
                                             {appointment.id || "--"}
                                         </p>
 
                                     </div>
 
 
-                                    <div className="bg-slate-50 rounded-xl p-4">
+                                    {/* PATIENT */}
 
-                                        <p className="text-xs text-slate-500 uppercase tracking-wide">
+                                    <div className="
+                                        bg-slate-50
+                                        rounded-xl
+                                        p-4
+                                    ">
+
+                                        <p className="
+                                            text-xs
+                                            text-slate-500
+                                            uppercase
+                                            tracking-wide
+                                        ">
                                             Patient
                                         </p>
 
-                                        <p className="text-sm font-medium text-slate-900 mt-1">
+
+                                        <p className="
+                                            text-sm
+                                            font-medium
+                                            text-slate-900
+                                            mt-1
+                                            break-all
+                                        ">
                                             {appointment.patient_id || "--"}
                                         </p>
 
                                     </div>
 
 
-                                    <div className="bg-slate-50 rounded-xl p-4">
+                                    {/* DOCTOR */}
 
-                                        <p className="text-xs text-slate-500 uppercase tracking-wide">
+                                    <div className="
+                                        bg-slate-50
+                                        rounded-xl
+                                        p-4
+                                    ">
+
+                                        <p className="
+                                            text-xs
+                                            text-slate-500
+                                            uppercase
+                                            tracking-wide
+                                        ">
                                             Doctor
                                         </p>
 
-                                        <p className="text-sm font-medium text-slate-900 mt-1">
+
+                                        <p className="
+                                            text-sm
+                                            font-medium
+                                            text-slate-900
+                                            mt-1
+                                            break-all
+                                        ">
                                             {appointment.doctor_id || "--"}
                                         </p>
 
                                     </div>
 
                                 </div>
+
+
+                                {/* --------------------------------------------------
+                                    MARK VISITED BUTTON
+                                -------------------------------------------------- */}
+
+                                {appointment.status?.toUpperCase() ===
+                                    "SCHEDULED" &&
+
+                                    canMarkVisited(appointment) && (
+
+                                        <div className="
+                                            mt-6
+                                            flex
+                                            justify-end
+                                        ">
+
+                                            <button
+                                                onClick={() =>
+                                                    handleMarkVisited(
+                                                        appointment.id
+                                                    )
+                                                }
+                                                disabled={
+                                                    updatingAppointment ===
+                                                    appointment.id
+                                                }
+                                                className="
+                                                    px-5
+                                                    py-2.5
+                                                    rounded-xl
+                                                    bg-blue-600
+                                                    text-white
+                                                    text-sm
+                                                    font-medium
+                                                    hover:bg-blue-700
+                                                    disabled:opacity-50
+                                                    disabled:cursor-not-allowed
+                                                    transition
+                                                "
+                                            >
+
+                                                {updatingAppointment ===
+                                                appointment.id
+
+                                                    ? "Updating..."
+
+                                                    : "Mark as Visited"}
+
+                                            </button>
+
+                                        </div>
+
+                                    )}
+
+
+                                {/* VISITED MESSAGE */}
+
+                                {appointment.status?.toUpperCase() ===
+                                    "VISITED" && (
+
+                                        <div className="
+                                            mt-5
+                                            flex
+                                            items-center
+                                            justify-end
+                                        ">
+
+                                            <span className="
+                                                text-sm
+                                                font-medium
+                                                text-blue-600
+                                            ">
+                                                ✓ Patient visited
+                                            </span>
+
+                                        </div>
+
+                                    )}
 
                             </div>
 
@@ -350,5 +664,6 @@ function OrganizationAppointments() {
     );
 
 }
+
 
 export default OrganizationAppointments;

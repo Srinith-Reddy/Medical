@@ -6,7 +6,9 @@ const API = axios.create({
 });
 
 
-// Create appointment
+// --------------------------------------------------
+// CREATE APPOINTMENT
+// --------------------------------------------------
 
 export const createAppointment = async (appointmentData) => {
 
@@ -20,7 +22,9 @@ export const createAppointment = async (appointmentData) => {
 };
 
 
-// Get appointment by ID
+// --------------------------------------------------
+// GET APPOINTMENT BY ID
+// --------------------------------------------------
 
 export const getAppointmentById = async (appointmentId) => {
 
@@ -33,7 +37,9 @@ export const getAppointmentById = async (appointmentId) => {
 };
 
 
-// Get all appointments for a patient
+// --------------------------------------------------
+// GET PATIENT APPOINTMENTS
+// --------------------------------------------------
 
 export const getPatientAppointments = async (patientId) => {
 
@@ -46,12 +52,35 @@ export const getPatientAppointments = async (patientId) => {
 };
 
 
-// Get all appointments for an organization
+// --------------------------------------------------
+// GET ORGANIZATION APPOINTMENTS
+// --------------------------------------------------
 
 export const getOrganizationAppointments = async (organizationId) => {
 
     const response = await API.get(
         `/appointments/organization/${organizationId}`
+    );
+
+    return response.data;
+
+};
+
+
+// --------------------------------------------------
+// UPDATE APPOINTMENT STATUS
+// --------------------------------------------------
+
+export const updateAppointmentStatus = async (
+    appointmentId,
+    status
+) => {
+
+    const response = await API.patch(
+        `/appointments/${appointmentId}/status`,
+        {
+            status: status
+        }
     );
 
     return response.data;
