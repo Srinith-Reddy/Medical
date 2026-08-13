@@ -1,59 +1,188 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import OrganizationSidebar from "../../components/sidebar/OrganizationSidebar";
 
 import { getAllOrganizations } from "../../services/organizationService";
+import { getDoctors } from "../../services/doctorService";
+import { getOrganizationAppointments } from "../../services/appointmentService";
 
 import OrganizationHero from "../../components/organization/OrganizationHero";
 import OrganizationStats from "../../components/organization/OrganizationStats";
-import OrganizationGrid from "../../components/organization/OrganizationGrid";
-import SearchBar from "../../components/organization/SearchBar";
-import FilterChips from "../../components/organization/FilterChips";
 
 function OrganizationDashboard() {
 
-    const navigate = useNavigate();
+    const [organization, setOrganization] = useState(null);
 
-    const [organizations, setOrganizations] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [selectedFilter, setSelectedFilter] = useState("All");
+    const [doctorCount, setDoctorCount] = useState(0);
+    const [appointmentCount, setAppointmentCount] = useState(0);
+
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+
+
+    // --------------------------------------------------
+    // LOAD CURRENT ORGANIZATION
+    // --------------------------------------------------
 
     useEffect(() => {
-        loadOrganizations();
+        loadOrganizationData();
     }, []);
 
-    const loadOrganizations = async () => {
+
+    const loadOrganizationData = async () => {
 
         try {
 
-            const data = await getAllOrganizations();
+            setLoading(true);
+            setError("");
 
-            setOrganizations(data);
+            // Temporary until authentication is implemented.
+            // For now, the first organization is treated
+            // as the currently logged-in organization.
+
+            const organizationsData =
+                await getAllOrganizations();
+
+            const currentOrganization =
+                organizationsData?.[0];
+
+            if (!currentOrganization) {
+
+                setError("No organization found.");
+
+                return;
+
+            }
+
+            setOrganization(currentOrganization);
+
+
+            // --------------------------------------------------
+            // LOAD DOCTORS + APPOINTMENTS
+            // --------------------------------------------------
+
+            const [
+                doctorsData,
+                appointmentsData
+            ] = await Promise.all([
+
+                getDoctors(currentOrganization.id),
+
+                getOrganizationAppointments(
+                    currentOrganization.id
+                )
+
+            ]);
+
+
+            setDoctorCount(
+                Array.isArray(doctorsData)
+                    ? doctorsData.length
+                    : 0
+            );
+
+            setAppointmentCount(
+                Array.isArray(appointmentsData)
+                    ? appointmentsData.length
+                    : 0
+            );
 
         } catch (error) {
 
-            console.error(error);
+            console.error(
+                "Failed to load organization dashboard:",
+                error
+            );
+
+            setError(
+                "Unable to load organization dashboard. Please try again."
+            );
+
+        } finally {
+
+            setLoading(false);
 
         }
 
     };
 
-    const filteredOrganizations = organizations.filter((organization) => {
 
-        const matchesSearch =
-            organization.name
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase());
+    // --------------------------------------------------
+    // LOADING
+    // --------------------------------------------------
 
-        const matchesFilter =
-            selectedFilter === "All" ||
-            organization.type === selectedFilter;
+    if (loading) {
 
-        return matchesSearch && matchesFilter;
+        return (
 
-    });
+            <DashboardLayout
+                sidebar={<OrganizationSidebar />}
+            >
+
+                <div className="flex items-center justify-center min-h-[60vh]">
+
+                    <p className="text-slate-500">
+                        Loading organization dashboard...
+                    </p>
+
+                </div>
+
+            </DashboardLayout>
+
+        );
+
+    }
+
+
+    // --------------------------------------------------
+    // ERROR
+    // --------------------------------------------------
+
+    if (error) {
+
+        return (
+
+            <DashboardLayout
+                sidebar={<OrganizationSidebar />}
+            >
+
+                <div className="bg-white rounded-2xl border border-red-200 p-8 text-center">
+
+                    <h2 className="text-lg font-semibold text-slate-900">
+                        Something went wrong
+                    </h2>
+
+                    <p className="text-sm text-red-600 mt-2">
+                        {error}
+                    </p>
+
+                    <button
+                        onClick={loadOrganizationData}
+                        className="
+                            mt-5
+                            px-5
+                            py-2.5
+                            rounded-xl
+                            bg-blue-600
+                            text-white
+                            text-sm
+                            font-medium
+                            hover:bg-blue-700
+                            transition
+                        "
+                    >
+                        Try Again
+                    </button>
+
+                </div>
+
+            </DashboardLayout>
+
+        );
+
+    }
+
 
     return (
 
@@ -61,76 +190,28 @@ function OrganizationDashboard() {
             sidebar={<OrganizationSidebar />}
         >
 
-            {/* Hero Section */}
+            {/* --------------------------------------------------
+                ORGANIZATION HERO
+            -------------------------------------------------- */}
 
-            <div className="flex items-start justify-between gap-8 mb-10">
+            <div className="mb-8">
 
-                <div className="flex-1">
-
-                    <OrganizationHero
-                        organization={organizations[0]}
-                    />
-
-                </div>
-
-                <button
-                    onClick={() => navigate("/organization/new")}
-                    className="
-                        bg-gradient-to-r
-                        from-[#4F8EF7]
-                        to-[#6C63FF]
-                        hover:opacity-90
-                        text-white
-                        font-semibold
-                        px-8
-                        py-4
-                        rounded-2xl
-                        shadow-lg
-                        transition
-                    "
-                >
-                    + Add Organization
-                </button>
+                <OrganizationHero
+                    organization={organization}
+                />
 
             </div>
 
-            {/* Statistics */}
+
+            {/* --------------------------------------------------
+                ORGANIZATION STATS
+            -------------------------------------------------- */}
 
             <OrganizationStats
-                organizations={organizations}
+                doctorCount={doctorCount}
+                appointmentCount={appointmentCount}
             />
 
-            {/* Search */}
-
-            <div className="mt-10">
-
-                <SearchBar
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                />
-
-            </div>
-
-            {/* Filters */}
-
-            <div className="mt-6">
-
-                <FilterChips
-                    selectedFilter={selectedFilter}
-                    setSelectedFilter={setSelectedFilter}
-                />
-
-            </div>
-
-            {/* Organization Cards */}
-
-            <div className="mt-8">
-
-                <OrganizationGrid
-                    organizations={filteredOrganizations}
-                />
-
-            </div>
 
         </DashboardLayout>
 
