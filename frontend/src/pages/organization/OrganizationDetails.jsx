@@ -238,11 +238,13 @@ function OrganizationDetails() {
                                     <div className="flex items-center gap-4">
 
                                         <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold">
+
                                             {doctor.name
                                                 ? doctor.name
                                                       .charAt(0)
                                                       .toUpperCase()
                                                 : "D"}
+
                                         </div>
 
 
@@ -264,21 +266,32 @@ function OrganizationDetails() {
                                     <div className="mt-5 space-y-2">
 
                                         {doctor.phone && (
+
                                             <p className="text-sm text-slate-600">
+
                                                 <span className="font-medium">
                                                     Phone:
                                                 </span>{" "}
+
                                                 {doctor.phone}
+
                                             </p>
+
                                         )}
 
+
                                         {doctor.email && (
+
                                             <p className="text-sm text-slate-600">
+
                                                 <span className="font-medium">
                                                     Email:
                                                 </span>{" "}
+
                                                 {doctor.email}
+
                                             </p>
+
                                         )}
 
                                     </div>
@@ -292,6 +305,77 @@ function OrganizationDetails() {
                     )}
 
                 </section>
+
+
+                {/* ---------------------------------------------
+                    PATIENTS
+                --------------------------------------------- */}
+
+                <section className="mt-10">
+
+                    <div className="
+                        bg-white
+                        rounded-2xl
+                        border
+                        border-slate-200
+                        p-6
+                    ">
+
+                        <div className="
+                            flex
+                            flex-col
+                            md:flex-row
+                            md:items-center
+                            md:justify-between
+                            gap-5
+                        ">
+
+                            <div>
+
+                                <h2 className="
+                                    text-2xl
+                                    font-bold
+                                    text-slate-900
+                                ">
+                                    Patients
+                                </h2>
+
+                                <p className="
+                                    text-slate-500
+                                    mt-1
+                                ">
+                                    View patients associated with this organization.
+                                </p>
+
+                            </div>
+
+
+                            <button
+                                onClick={() =>
+                                    navigate(
+                                        `/organization/${id}/patients`
+                                    )
+                                }
+                                className="
+                                    bg-blue-600
+                                    text-white
+                                    px-5
+                                    py-3
+                                    rounded-xl
+                                    font-medium
+                                    hover:bg-blue-700
+                                    transition
+                                "
+                            >
+                                View Patients →
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
 
             </div>
 

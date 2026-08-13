@@ -1,73 +1,59 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import OrganizationSidebar from "../../components/sidebar/OrganizationSidebar";
 
-import { getAllOrganizations } from "../../services/organizationService";
-import { getDoctors } from "../../services/doctorService";
+import { getPatientsByOrganization } from "../../services/patientService";
 
 
-function OrganizationDoctors() {
+function OrganizationPatients() {
 
-    const [doctors, setDoctors] = useState([]);
+    const navigate = useNavigate();
+
+    // Get organization ID from URL
+    const { id } = useParams();
+
+    const [patients, setPatients] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
 
     // --------------------------------------------------
-    // LOAD DOCTORS
+    // LOAD PATIENTS FOR THIS ORGANIZATION
     // --------------------------------------------------
 
     useEffect(() => {
-        loadDoctors();
-    }, []);
+
+        if (id) {
+            loadPatients();
+        }
+
+    }, [id]);
 
 
-    const loadDoctors = async () => {
+    const loadPatients = async () => {
 
         try {
 
             setLoading(true);
             setError("");
 
+            const data = await getPatientsByOrganization(id);
 
-            // Temporary until authentication is implemented
-            // First organization = current organization
-
-            const organizations =
-                await getAllOrganizations();
-
-            const currentOrganization =
-                organizations[0];
-
-
-            if (!currentOrganization?.id) {
-
-                setDoctors([]);
-
-                return;
-            }
-
-
-            const data =
-                await getDoctors(
-                    currentOrganization.id
-                );
-
-
-            setDoctors(data || []);
-
+            setPatients(data || []);
 
         } catch (error) {
 
             console.error(
-                "Failed to load doctors:",
+                "Failed to load organization patients:",
                 error
             );
 
             setError(
-                "Unable to load doctors. Please try again."
+                "Unable to load patients for this organization."
             );
 
         } finally {
@@ -80,13 +66,32 @@ function OrganizationDoctors() {
 
 
     // --------------------------------------------------
-    // DOCTOR INITIAL
+    // FILTER PATIENTS
+    // --------------------------------------------------
+
+    const filteredPatients = patients.filter(
+        (patient) => {
+
+            const name =
+                patient.name?.toLowerCase() || "";
+
+            const search =
+                searchTerm.toLowerCase();
+
+            return name.includes(search);
+
+        }
+    );
+
+
+    // --------------------------------------------------
+    // PATIENT INITIAL
     // --------------------------------------------------
 
     const getInitial = (name) => {
 
         if (!name) {
-            return "D";
+            return "P";
         }
 
         return name
@@ -94,6 +99,33 @@ function OrganizationDoctors() {
             .toUpperCase();
 
     };
+
+
+    // --------------------------------------------------
+    // NO ORGANIZATION ID
+    // --------------------------------------------------
+
+    if (!id) {
+
+        return (
+
+            <DashboardLayout
+                sidebar={<OrganizationSidebar />}
+            >
+
+                <div className="bg-white rounded-2xl border border-red-200 p-8">
+
+                    <p className="text-red-600">
+                        Organization ID is missing.
+                    </p>
+
+                </div>
+
+            </DashboardLayout>
+
+        );
+
+    }
 
 
     return (
@@ -118,21 +150,55 @@ function OrganizationDoctors() {
                     ORGANIZATION PORTAL
                 </p>
 
+
                 <h1 className="
                     text-4xl
                     font-bold
                     text-slate-900
                     mt-2
                 ">
-                    Doctors
+                    Patients
                 </h1>
+
 
                 <p className="
                     text-slate-500
                     mt-2
                 ">
-                    Doctors associated with your organization.
+                    Patients associated with this organization.
                 </p>
+
+            </div>
+
+
+            {/* --------------------------------------------------
+                SEARCH
+            -------------------------------------------------- */}
+
+            <div className="mb-6">
+
+                <input
+                    type="text"
+                    placeholder="🔍 Search patients..."
+                    value={searchTerm}
+                    onChange={(e) =>
+                        setSearchTerm(e.target.value)
+                    }
+                    className="
+                        w-full
+                        rounded-2xl
+                        border
+                        border-slate-200
+                        bg-white
+                        px-5
+                        py-3.5
+                        text-sm
+                        shadow-sm
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-blue-500
+                    "
+                />
 
             </div>
 
@@ -153,7 +219,7 @@ function OrganizationDoctors() {
                 ">
 
                     <p className="text-slate-500">
-                        Loading doctors...
+                        Loading patients...
                     </p>
 
                 </div>
@@ -180,8 +246,9 @@ function OrganizationDoctors() {
                         {error}
                     </p>
 
+
                     <button
-                        onClick={loadDoctors}
+                        onClick={loadPatients}
                         className="
                             mt-4
                             px-5
@@ -209,7 +276,7 @@ function OrganizationDoctors() {
 
             {!loading &&
                 !error &&
-                doctors.length === 0 && (
+                filteredPatients.length === 0 && (
 
                     <div className="
                         bg-white
@@ -232,8 +299,9 @@ function OrganizationDoctors() {
                             text-blue-600
                             text-2xl
                         ">
-                            🩺
+                            👤
                         </div>
+
 
                         <h2 className="
                             text-lg
@@ -241,16 +309,16 @@ function OrganizationDoctors() {
                             text-slate-900
                             mt-5
                         ">
-                            No doctors found
+                            No patients found
                         </h2>
+
 
                         <p className="
                             text-sm
                             text-slate-500
                             mt-2
                         ">
-                            There are currently no doctors
-                            associated with this organization.
+                            No patients are associated with this organization.
                         </p>
 
                     </div>
@@ -259,12 +327,12 @@ function OrganizationDoctors() {
 
 
             {/* --------------------------------------------------
-                DOCTOR LIST
+                PATIENT LIST
             -------------------------------------------------- */}
 
             {!loading &&
                 !error &&
-                doctors.length > 0 && (
+                filteredPatients.length > 0 && (
 
                     <div className="
                         grid
@@ -274,11 +342,21 @@ function OrganizationDoctors() {
                         gap-5
                     ">
 
-                        {doctors.map(
-                            (doctor) => (
+                        {filteredPatients.map(
+                            (patient) => (
 
                                 <div
-                                    key={doctor.id}
+                                    key={patient.id}
+                                    onClick={() =>
+                                        navigate(
+                                            `/organization/${id}/patients/${patient.id}`,
+                                            {
+                                                state: {
+                                                    patient
+                                                }
+                                            }
+                                        )
+                                    }
                                     className="
                                         bg-white
                                         rounded-2xl
@@ -287,11 +365,13 @@ function OrganizationDoctors() {
                                         p-5
                                         shadow-sm
                                         hover:shadow-md
+                                        hover:border-blue-200
+                                        cursor-pointer
                                         transition
                                     "
                                 >
 
-                                    {/* DOCTOR HEADER */}
+                                    {/* PATIENT HEADER */}
 
                                     <div className="
                                         flex
@@ -311,9 +391,11 @@ function OrganizationDoctors() {
                                             font-bold
                                             text-lg
                                         ">
+
                                             {getInitial(
-                                                doctor.name
+                                                patient.name
                                             )}
+
                                         </div>
 
 
@@ -323,17 +405,17 @@ function OrganizationDoctors() {
                                                 font-semibold
                                                 text-slate-900
                                             ">
-                                                {doctor.name ||
-                                                    "Doctor"}
+                                                {patient.name ||
+                                                    "Patient"}
                                             </h2>
+
 
                                             <p className="
                                                 text-sm
                                                 text-slate-500
                                                 mt-0.5
                                             ">
-                                                {doctor.role ||
-                                                    "Doctor"}
+                                                Patient
                                             </p>
 
                                         </div>
@@ -341,18 +423,19 @@ function OrganizationDoctors() {
                                     </div>
 
 
-                                    {/* DOCTOR DETAILS */}
+                                    {/* PATIENT DETAILS */}
 
                                     <div className="
                                         mt-5
                                         space-y-2
                                     ">
 
-                                        {doctor.phone && (
+                                        {patient.phone && (
 
                                             <div className="
                                                 flex
                                                 justify-between
+                                                gap-4
                                                 text-sm
                                             ">
 
@@ -362,11 +445,12 @@ function OrganizationDoctors() {
                                                     Phone
                                                 </span>
 
+
                                                 <span className="
                                                     font-medium
                                                     text-slate-800
                                                 ">
-                                                    {doctor.phone}
+                                                    {patient.phone}
                                                 </span>
 
                                             </div>
@@ -374,13 +458,13 @@ function OrganizationDoctors() {
                                         )}
 
 
-                                        {doctor.email && (
+                                        {patient.email && (
 
                                             <div className="
                                                 flex
                                                 justify-between
-                                                text-sm
                                                 gap-4
+                                                text-sm
                                             ">
 
                                                 <span className="
@@ -389,18 +473,41 @@ function OrganizationDoctors() {
                                                     Email
                                                 </span>
 
+
                                                 <span className="
                                                     font-medium
                                                     text-slate-800
                                                     text-right
                                                     break-all
                                                 ">
-                                                    {doctor.email}
+                                                    {patient.email}
                                                 </span>
 
                                             </div>
 
                                         )}
+
+                                    </div>
+
+
+                                    {/* VIEW PATIENT */}
+
+                                    <div className="
+                                        mt-5
+                                        pt-3
+                                        border-t
+                                        border-slate-100
+                                        flex
+                                        justify-end
+                                    ">
+
+                                        <span className="
+                                            text-sm
+                                            font-medium
+                                            text-blue-600
+                                        ">
+                                            View details →
+                                        </span>
 
                                     </div>
 
@@ -419,4 +526,5 @@ function OrganizationDoctors() {
 
 }
 
-export default OrganizationDoctors;
+
+export default OrganizationPatients;

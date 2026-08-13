@@ -27,6 +27,8 @@ import PrescriptionDetails from "./pages/prescriptions/PrescriptionDetails";
 import BookAppointment from "./pages/appointments/BookAppointment";
 import OrganizationDoctors from "./pages/organization/OrganizationDoctors";
 import OrganizationAppointments from "./pages/organization/OrganizationAppointments";
+import OrganizationPatients from "./pages/organization/OrganizationPatients";
+import OrganizationPatientDetails from "./pages/organization/OrganizationPatientDetails";
 
 function App() {
     return (
@@ -140,6 +142,16 @@ function App() {
             <Route
               path="/organization/doctors"
               element={<OrganizationDoctors />}
+            />
+
+            <Route
+                path="/organization/:id/patients"
+                element={<OrganizationPatients />}
+            />
+
+            <Route
+                path="/organization/:id/patients/:patientId"
+                element={<OrganizationPatientDetails />}
             />
 
         </Routes>

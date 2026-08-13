@@ -42,7 +42,7 @@ function OrganizationSidebar() {
         {
             name: "Patients",
             icon: Users,
-            path: "/patients"
+            path: "/organization/patients"
         },
 
         {

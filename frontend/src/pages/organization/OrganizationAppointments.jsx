@@ -17,7 +17,6 @@ import { getAllPatients } from "../../services/patientService";
 function OrganizationAppointments() {
 
     const [appointments, setAppointments] = useState([]);
-
     const [patients, setPatients] = useState([]);
     const [doctors, setDoctors] = useState([]);
 
@@ -28,7 +27,7 @@ function OrganizationAppointments() {
 
 
     // --------------------------------------------------
-    // LOAD APPOINTMENTS + PATIENTS + DOCTORS
+    // LOAD APPOINTMENTS
     // --------------------------------------------------
 
     useEffect(() => {
@@ -43,14 +42,11 @@ function OrganizationAppointments() {
             setLoading(true);
             setError("");
 
-
             // Get organizations
             const organizations =
                 await getAllOrganizations();
 
-
             // Temporary until authentication is implemented
-            // First organization = current organization
             const currentOrganization =
                 organizations[0];
 
@@ -62,11 +58,10 @@ function OrganizationAppointments() {
                 setPatients([]);
 
                 return;
-
             }
 
 
-            // Get appointments, doctors and patients
+            // Load appointments, doctors and patients
             const [
                 appointmentsData,
                 doctorsData,
@@ -84,17 +79,6 @@ function OrganizationAppointments() {
                 getAllPatients()
 
             ]);
-
-
-            console.log(
-                "APPOINTMENTS FROM API:",
-                appointmentsData
-            );
-
-            console.log(
-                "DOCTORS FROM API:",
-                doctorsData
-            );
 
 
             setAppointments(
@@ -152,20 +136,13 @@ function OrganizationAppointments() {
 
     const getDoctorName = (appointment) => {
 
-        /*
-         * First check whether the appointment itself
-         * already contains doctor information.
-         */
-
+        // If API already returns doctor object
         if (appointment?.doctor?.name) {
             return appointment.doctor.name;
         }
 
 
-        /*
-         * Get the doctor ID from the appointment.
-         */
-
+        // Support different possible API field names
         const doctorId =
             appointment?.doctor_id ||
             appointment?.doctorId ||
@@ -173,36 +150,13 @@ function OrganizationAppointments() {
 
 
         if (!doctorId) {
-
-            console.log(
-                "No doctor ID found for appointment:",
-                appointment
-            );
-
             return "Not assigned";
-
         }
 
-
-        /*
-         * Match appointment doctor ID
-         * with the doctors returned by the API.
-         */
 
         const doctor = doctors.find(
             (doctor) =>
                 String(doctor.id) === String(doctorId)
-        );
-
-
-        console.log(
-            "Appointment doctor ID:",
-            doctorId
-        );
-
-        console.log(
-            "Matched doctor:",
-            doctor
         );
 
 
@@ -255,7 +209,7 @@ function OrganizationAppointments() {
 
 
     // --------------------------------------------------
-    // CHECK WHETHER APPOINTMENT TIME HAS PASSED
+    // CHECK IF APPOINTMENT TIME HAS PASSED
     // --------------------------------------------------
 
     const canMarkVisited = (appointment) => {
@@ -301,7 +255,7 @@ function OrganizationAppointments() {
 
 
     // --------------------------------------------------
-    // MARK APPOINTMENT AS VISITED
+    // MARK AS VISITED
     // --------------------------------------------------
 
     const handleMarkVisited = async (appointmentId) => {
@@ -322,15 +276,12 @@ function OrganizationAppointments() {
 
             setAppointments(
                 (currentAppointments) =>
-
                     currentAppointments.map(
                         (appointment) =>
-
                             appointment.id === appointmentId
                                 ? updatedAppointment
                                 : appointment
                     )
-
             );
 
 
@@ -371,11 +322,10 @@ function OrganizationAppointments() {
                     uppercase
                     tracking-[0.2em]
                     text-blue-600
-                    font-medium
+                    font-semibold
                 ">
                     ORGANIZATION PORTAL
                 </p>
-
 
                 <h1 className="
                     text-4xl
@@ -385,7 +335,6 @@ function OrganizationAppointments() {
                 ">
                     Appointments
                 </h1>
-
 
                 <p className="
                     text-slate-500
@@ -439,7 +388,6 @@ function OrganizationAppointments() {
                     <p className="text-red-600">
                         {error}
                     </p>
-
 
                     <button
                         onClick={loadAppointments}
@@ -496,7 +444,6 @@ function OrganizationAppointments() {
                             📅
                         </div>
 
-
                         <h2 className="
                             text-lg
                             font-semibold
@@ -505,7 +452,6 @@ function OrganizationAppointments() {
                         ">
                             No appointments yet
                         </h2>
-
 
                         <p className="
                             text-sm
@@ -518,7 +464,7 @@ function OrganizationAppointments() {
 
                     </div>
 
-            )}
+                )}
 
 
             {/* --------------------------------------------------
@@ -541,7 +487,8 @@ function OrganizationAppointments() {
                                         rounded-2xl
                                         border
                                         border-slate-200
-                                        p-4
+                                        px-5
+                                        py-4
                                         shadow-sm
                                         hover:shadow-md
                                         transition
@@ -557,10 +504,12 @@ function OrganizationAppointments() {
                                         gap-4
                                     ">
 
+                                        {/* DATE + TIME */}
+
                                         <div>
 
                                             <p className="
-                                                text-lg
+                                                text-base
                                                 font-semibold
                                                 text-slate-900
                                             ">
@@ -569,11 +518,10 @@ function OrganizationAppointments() {
                                                 )}
                                             </p>
 
-
                                             <p className="
                                                 text-sm
                                                 text-slate-500
-                                                mt-1
+                                                mt-0.5
                                             ">
                                                 {formatTime(
                                                     appointment.appointment_date
@@ -588,10 +536,10 @@ function OrganizationAppointments() {
                                         <span
                                             className={`
                                                 px-3
-                                                py-1.5
+                                                py-1
                                                 rounded-full
                                                 text-xs
-                                                font-medium
+                                                font-semibold
                                                 ${getStatusStyle(
                                                     appointment.status
                                                 )}
@@ -616,31 +564,31 @@ function OrganizationAppointments() {
                                         {/* PATIENT */}
 
                                         <div className="
+                                            flex
+                                            items-center
+                                            justify-between
                                             bg-slate-50
                                             rounded-xl
-                                            p-3
+                                            px-4
+                                            py-3
                                         ">
 
-                                            <p className="
-                                                text-xs
+                                            <span className="
+                                                text-sm
                                                 text-slate-500
-                                                uppercase
-                                                tracking-wide
                                             ">
                                                 Patient
-                                            </p>
+                                            </span>
 
-
-                                            <p className="
-                                                text-base
+                                            <span className="
+                                                text-sm
                                                 font-semibold
                                                 text-slate-900
-                                                mt-1
                                             ">
                                                 {getPatientName(
                                                     appointment.patient_id
                                                 )}
-                                            </p>
+                                            </span>
 
                                         </div>
 
@@ -648,38 +596,38 @@ function OrganizationAppointments() {
                                         {/* DOCTOR */}
 
                                         <div className="
+                                            flex
+                                            items-center
+                                            justify-between
                                             bg-slate-50
                                             rounded-xl
-                                            p-3
+                                            px-4
+                                            py-3
                                         ">
 
-                                            <p className="
-                                                text-xs
+                                            <span className="
+                                                text-sm
                                                 text-slate-500
-                                                uppercase
-                                                tracking-wide
                                             ">
                                                 Doctor
-                                            </p>
+                                            </span>
 
-
-                                            <p className="
-                                                text-base
+                                            <span className="
+                                                text-sm
                                                 font-semibold
                                                 text-slate-900
-                                                mt-1
                                             ">
                                                 {getDoctorName(
                                                     appointment
                                                 )}
-                                            </p>
+                                            </span>
 
                                         </div>
 
                                     </div>
 
 
-                                    {/* MARK VISITED */}
+                                    {/* MARK AS VISITED */}
 
                                     {appointment.status?.toUpperCase() ===
                                         "SCHEDULED" &&
@@ -719,16 +667,14 @@ function OrganizationAppointments() {
 
                                                     {updatingAppointment ===
                                                     appointment.id
-
                                                         ? "Updating..."
-
                                                         : "Mark as Visited"}
 
                                                 </button>
 
                                             </div>
 
-                                    )}
+                                        )}
 
 
                                     {/* VISITED */}
@@ -752,7 +698,7 @@ function OrganizationAppointments() {
 
                                             </div>
 
-                                    )}
+                                        )}
 
                                 </div>
 
@@ -761,7 +707,7 @@ function OrganizationAppointments() {
 
                     </div>
 
-            )}
+                )}
 
         </DashboardLayout>
 
