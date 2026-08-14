@@ -32,6 +32,19 @@ def create_appointment(data: AppointmentCreate):
             detail=str(e)
         )
 
+@router.get("/doctor/{doctor_id}")
+def get_appointments_by_doctor(doctor_id: str):
+    try:
+        return AppointmentService.get_appointments_by_doctor(
+            doctor_id
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
 
 @router.get("/{appointment_id}")
 def get_appointment(appointment_id: str):
@@ -79,3 +92,4 @@ def get_organization_appointments(organization_id: str):
             status_code=500,
             detail=str(e)
         )
+
