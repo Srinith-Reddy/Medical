@@ -105,10 +105,37 @@ class PatientService:
 
         response = (
             supabase
-            .table("patients")
-            .select("*")
+            .table("organization_patients")
+            .select("patient_id, patients(*)")
             .eq("organization_id", organization_id)
             .execute()
         )
 
-        return response.data
+        return [
+            row["patients"]
+            for row in response.data
+        ]
+
+    @staticmethod
+    def add_patient_to_organization(
+        organization_id: str,
+        patient_id: str
+    ):
+        relationship = {
+            "organization_id": organization_id,
+            "patient_id": patient_id
+        }
+
+        response = (
+            supabase
+            .table("organization_patients")
+            .insert(relationship)
+            .execute()
+        )
+
+        if not response.data:
+            raise ValueError(
+                "Failed to add patient to organization"
+            )
+
+        return response.data[0]

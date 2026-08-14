@@ -11,15 +11,11 @@ class AccessService:
     def hash_otp(otp: str) -> str:
         return hashlib.sha256(otp.encode()).hexdigest()
 
-    # ---------------------------------------------------------
-    # 1. REQUEST OTP
-    # ---------------------------------------------------------
     @staticmethod
     def request_otp(
         appointment_id: str,
         aadhaar_number: str
     ):
-        # 1. Get appointment
         appointment_response = (
             supabase
             .table("appointments")
