@@ -27,3 +27,8 @@ class PatientUpdate(BaseModel):
 class AddPatientToOrganization(BaseModel):
     organization_id: str
     patient_id: str
+
+class AddDoctorPatient(BaseModel):
+    doctor_id: str
+    patient_id: str
+    organization_id: str

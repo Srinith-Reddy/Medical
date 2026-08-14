@@ -1,7 +1,13 @@
 from fastapi import APIRouter, HTTPException
 
-from app.schemas.patient import PatientCreate, PatientUpdate, AddPatientToOrganization
+#from app.schemas.patient import PatientCreate, PatientUpdate, AddPatientToOrganization
 from app.services.patient_service import PatientService
+from app.schemas.patient import (
+    PatientCreate,
+    PatientUpdate,
+    AddPatientToOrganization,
+    AddDoctorPatient
+)
 
 router = APIRouter(
     prefix="/patients",
@@ -50,18 +56,6 @@ def get_patients_by_organization(organization_id: str):
     )
 
 
-@router.get("/{patient_id}")
-def get_patient(patient_id: str):
-    try:
-        return PatientService.get_patient_by_id(patient_id)
-
-    except Exception:
-        raise HTTPException(
-            status_code=404,
-            detail="Patient not found"
-        )
-
-
 @router.patch("/{patient_id}")
 def update_patient(
     patient_id: str,
@@ -99,4 +93,78 @@ def add_patient_to_organization(
         raise HTTPException(
             status_code=400,
             detail=str(e)
+        )
+
+
+@router.get("/doctor/{doctor_id}")
+def get_patients_by_doctor(doctor_id: str):
+
+    try:
+        return PatientService.get_patients_by_doctor(
+            doctor_id
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+@router.post("/doctor/add")
+def add_patient_to_doctor(
+    data: AddDoctorPatient
+):
+
+    try:
+        return PatientService.add_patient_to_doctor(
+            doctor_id=data.doctor_id,
+            patient_id=data.patient_id,
+            organization_id=data.organization_id
+        )
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+@router.delete("/doctor/{doctor_id}/{patient_id}")
+def remove_patient_from_doctor(
+    doctor_id: str,
+    patient_id: str
+):
+
+    try:
+        return PatientService.remove_patient_from_doctor(
+            doctor_id=doctor_id,
+            patient_id=patient_id
+        )
+
+    except ValueError as e:
+        raise HTTPException(
+            status_code=404,
+            detail=str(e)
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+@router.get("/{patient_id}")
+def get_patient(patient_id: str):
+    try:
+        return PatientService.get_patient_by_id(patient_id)
+
+    except Exception:
+        raise HTTPException(
+            status_code=404,
+            detail="Patient not found"
         )
