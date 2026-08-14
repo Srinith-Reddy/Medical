@@ -21,3 +21,9 @@ class PatientUpdate(BaseModel):
     height: float | None = None
     weight: float | None = None
     blood_group: str | None = None
+
+
+
+class AddPatientToOrganization(BaseModel):
+    organization_id: str
+    patient_id: str
