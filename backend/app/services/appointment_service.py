@@ -111,6 +111,19 @@ class AppointmentService:
 
         return response.data
 
+    @staticmethod
+    def get_appointments_by_doctor(doctor_id: str):
+        response = (
+            supabase
+            .table("appointments")
+            .select("*")
+            .eq("doctor_id", doctor_id)
+            .order("appointment_date", desc=False)
+            .execute()
+        )
+
+        return response.data
+
 
     # --------------------------------------------------
     # UPDATE APPOINTMENT STATUS
