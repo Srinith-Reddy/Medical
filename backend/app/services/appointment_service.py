@@ -111,14 +111,28 @@ class AppointmentService:
 
         return response.data
 
+
+    # --------------------------------------------------
+    # GET DOCTOR APPOINTMENTS
+    # --------------------------------------------------
+
     @staticmethod
-    def get_appointments_by_doctor(doctor_id: str):
+    def get_appointments_by_doctor(
+        doctor_id: str
+    ):
+
         response = (
             supabase
             .table("appointments")
             .select("*")
-            .eq("doctor_id", doctor_id)
-            .order("appointment_date", desc=False)
+            .eq(
+                "doctor_id",
+                doctor_id
+            )
+            .order(
+                "appointment_date",
+                desc=False
+            )
             .execute()
         )
 
@@ -146,6 +160,7 @@ class AppointmentService:
                 appointment_id
             )
             .execute()
+
         )
 
         if not response.data:

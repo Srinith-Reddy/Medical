@@ -53,40 +53,20 @@ def create_appointment(
             detail=str(e)
         )
 
+
+# --------------------------------------------------
+# GET DOCTOR APPOINTMENTS
+# --------------------------------------------------
+
 @router.get("/doctor/{doctor_id}")
-def get_appointments_by_doctor(doctor_id: str):
-    try:
-        return AppointmentService.get_appointments_by_doctor(
-            doctor_id
-        )
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
-
-
-# --------------------------------------------------
-# GET APPOINTMENT BY ID
-# --------------------------------------------------
-
-@router.get("/{appointment_id}")
-def get_appointment(
-    appointment_id: str
+def get_appointments_by_doctor(
+    doctor_id: str
 ):
 
     try:
 
-        return AppointmentService.get_appointment(
-            appointment_id
-        )
-
-    except ValueError as e:
-
-        raise HTTPException(
-            status_code=404,
-            detail=str(e)
+        return AppointmentService.get_appointments_by_doctor(
+            doctor_id
         )
 
     except Exception as e:
@@ -144,6 +124,36 @@ def get_organization_appointments(
 
 
 # --------------------------------------------------
+# GET APPOINTMENT BY ID
+# --------------------------------------------------
+
+@router.get("/{appointment_id}")
+def get_appointment(
+    appointment_id: str
+):
+
+    try:
+
+        return AppointmentService.get_appointment(
+            appointment_id
+        )
+
+    except ValueError as e:
+
+        raise HTTPException(
+            status_code=404,
+            detail=str(e)
+        )
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+
+# --------------------------------------------------
 # UPDATE APPOINTMENT STATUS
 # --------------------------------------------------
 
@@ -176,4 +186,3 @@ def update_appointment_status(
             status_code=500,
             detail=str(e)
         )
-
