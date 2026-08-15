@@ -10,6 +10,7 @@ import { getOrganizationAppointments } from "../../services/appointmentService";
 import OrganizationHero from "../../components/organization/OrganizationHero";
 import OrganizationStats from "../../components/organization/OrganizationStats";
 
+
 function OrganizationDashboard() {
 
     const [organization, setOrganization] = useState(null);
@@ -37,6 +38,7 @@ function OrganizationDashboard() {
             setLoading(true);
             setError("");
 
+
             // Temporary until authentication is implemented.
             // For now, the first organization is treated
             // as the currently logged-in organization.
@@ -44,8 +46,10 @@ function OrganizationDashboard() {
             const organizationsData =
                 await getAllOrganizations();
 
+
             const currentOrganization =
                 organizationsData?.[0];
+
 
             if (!currentOrganization) {
 
@@ -55,7 +59,19 @@ function OrganizationDashboard() {
 
             }
 
+
+            // Save organization in state
+
             setOrganization(currentOrganization);
+
+
+            // Save organization ID so that the sidebar
+            // can use it on every organization page.
+
+            localStorage.setItem(
+                "organizationId",
+                currentOrganization.id
+            );
 
 
             // --------------------------------------------------
@@ -67,7 +83,9 @@ function OrganizationDashboard() {
                 appointmentsData
             ] = await Promise.all([
 
-                getDoctors(currentOrganization.id),
+                getDoctors(
+                    currentOrganization.id
+                ),
 
                 getOrganizationAppointments(
                     currentOrganization.id
@@ -82,11 +100,13 @@ function OrganizationDashboard() {
                     : 0
             );
 
+
             setAppointmentCount(
                 Array.isArray(appointmentsData)
                     ? appointmentsData.length
                     : 0
             );
+
 
         } catch (error) {
 
@@ -95,9 +115,11 @@ function OrganizationDashboard() {
                 error
             );
 
+
             setError(
                 "Unable to load organization dashboard. Please try again."
             );
+
 
         } finally {
 
@@ -117,7 +139,9 @@ function OrganizationDashboard() {
         return (
 
             <DashboardLayout
-                sidebar={<OrganizationSidebar />}
+                sidebar={
+                    <OrganizationSidebar />
+                }
             >
 
                 <div className="flex items-center justify-center min-h-[60vh]">
@@ -144,7 +168,9 @@ function OrganizationDashboard() {
         return (
 
             <DashboardLayout
-                sidebar={<OrganizationSidebar />}
+                sidebar={
+                    <OrganizationSidebar />
+                }
             >
 
                 <div className="bg-white rounded-2xl border border-red-200 p-8 text-center">
@@ -153,9 +179,11 @@ function OrganizationDashboard() {
                         Something went wrong
                     </h2>
 
+
                     <p className="text-sm text-red-600 mt-2">
                         {error}
                     </p>
+
 
                     <button
                         onClick={loadOrganizationData}
@@ -184,10 +212,16 @@ function OrganizationDashboard() {
     }
 
 
+    // --------------------------------------------------
+    // DASHBOARD
+    // --------------------------------------------------
+
     return (
 
         <DashboardLayout
-            sidebar={<OrganizationSidebar />}
+            sidebar={
+                <OrganizationSidebar />
+            }
         >
 
             {/* --------------------------------------------------
@@ -218,5 +252,6 @@ function OrganizationDashboard() {
     );
 
 }
+
 
 export default OrganizationDashboard;

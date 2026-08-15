@@ -29,6 +29,7 @@ import OrganizationDoctors from "./pages/organization/OrganizationDoctors";
 import OrganizationAppointments from "./pages/organization/OrganizationAppointments";
 import OrganizationPatients from "./pages/organization/OrganizationPatients";
 import OrganizationPatientDetails from "./pages/organization/OrganizationPatientDetails";
+import OrganizationLabs from "./pages/organization/OrganizationLabs";
 
 function App() {
     return (
@@ -142,6 +143,11 @@ function App() {
             <Route
               path="/organization/doctors"
               element={<OrganizationDoctors />}
+            />
+
+            <Route
+                path="/organization/labs"
+                element={<OrganizationLabs />}
             />
 
             <Route

@@ -1,17 +1,23 @@
 import { useState } from "react";
 
 import DashboardLayout from "../../components/layout/DashboardLayout";
+import DoctorSidebar from "../../components/sidebar/DoctorSidebar";
+
 import PatientHeader from "../../components/patient/PatientHeader";
 import PatientSearch from "../../components/patient/PatientSearch";
 import PatientTable from "../../components/patient/PatientTable";
+
 
 function Patients() {
 
     const [searchTerm, setSearchTerm] = useState("");
 
+
     return (
 
-        <DashboardLayout>
+        <DashboardLayout
+            sidebar={<DoctorSidebar />}
+        >
 
             <PatientHeader />
 
@@ -29,5 +35,6 @@ function Patients() {
     );
 
 }
+
 
 export default Patients;

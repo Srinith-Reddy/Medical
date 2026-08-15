@@ -1,62 +1,92 @@
 function DoctorHero({ doctor }) {
 
     return (
-        <div className="bg-gradient-to-r from-[#2563EB] via-[#3B82F6] to-[#60A5FA] rounded-[32px] p-10 text-white shadow-xl">
 
-            <p className="uppercase tracking-[0.3em] text-blue-100 text-xs font-medium">
-                DOCTOR DASHBOARD
-            </p>
+        <div className="bg-white border border-slate-200 rounded-2xl px-8 py-7 shadow-sm">
 
-            <h1 className="text-5xl font-bold mt-3">
-                Good Morning, Dr. {doctor?.name || "Doctor"} 👋
-            </h1>
+            <div className="flex items-center justify-between">
 
-            <p className="mt-3 text-blue-100 text-xl">
-                {doctor?.specialization || "General"} Specialist
-            </p>
+                <div>
 
-            <div className="grid grid-cols-3 gap-8 mt-10">
-
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20">
-
-                    <p className="text-blue-100 text-sm uppercase tracking-wide">
-                        Today's Appointments
+                    <p className="
+                        text-sm
+                        font-medium
+                        text-slate-500
+                        uppercase
+                        tracking-wider
+                    ">
+                        Doctor Dashboard
                     </p>
 
-                    <p className="text-3xl font-bold mt-2">
-                        12
+                    <h1 className="
+                        text-3xl
+                        font-semibold
+                        text-slate-900
+                        mt-2
+                    ">
+                        Good morning, Dr. {doctor?.name || "Doctor"}
+                    </h1>
+
+                    <p className="
+                        text-slate-500
+                        mt-2
+                    ">
+                        {doctor?.specialization
+                            ? `${doctor.specialization} Specialist`
+                            : "Medical Practitioner"
+                        }
                     </p>
 
                 </div>
 
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20">
-
-                    <p className="text-blue-100 text-sm uppercase tracking-wide">
-                        Active Patients
-                    </p>
-
-                    <p className="text-3xl font-bold mt-2">
-                        124
-                    </p>
-
-                </div>
-
-                <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20">
-
-                    <p className="text-blue-100 text-sm uppercase tracking-wide">
-                        Emergency Cases
-                    </p>
-
-                    <p className="text-3xl font-bold mt-2">
-                        2
-                    </p>
-
+                <div className="
+                    hidden
+                    md:flex
+                    items-center
+                    justify-center
+                    w-12
+                    h-12
+                    rounded-full
+                    bg-slate-100
+                    text-slate-700
+                    font-semibold
+                    text-lg
+                ">
+                    {doctor?.name
+                        ? doctor.name.charAt(0).toUpperCase()
+                        : "D"
+                    }
                 </div>
 
             </div>
 
+            <div className="
+                mt-6
+                pt-5
+                border-t
+                border-slate-100
+                flex
+                flex-wrap
+                gap-x-8
+                gap-y-2
+                text-sm
+                text-slate-500
+            ">
+
+                <span>
+                    Today's schedule and patient activity
+                </span>
+
+                <span>
+                    Organization Portal
+                </span>
+
+            </div>
+
         </div>
+
     );
+
 }
 
 export default DoctorHero;

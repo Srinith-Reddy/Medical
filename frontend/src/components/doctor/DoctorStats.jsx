@@ -1,3 +1,11 @@
+import {
+    CalendarDays,
+    Users,
+    ClipboardList,
+    FileText
+} from "lucide-react";
+
+
 function DoctorStats({
     appointments = 0,
     patients = 0,
@@ -9,55 +17,89 @@ function DoctorStats({
         {
             title: "Appointments",
             value: appointments,
-            icon: "📅"
+            icon: CalendarDays
         },
         {
             title: "Patients",
             value: patients,
-            icon: "🧑‍⚕️"
+            icon: Users
         },
         {
             title: "Prescriptions",
             value: prescriptions,
-            icon: "💊"
+            icon: ClipboardList
         },
         {
             title: "Reports",
             value: reports,
-            icon: "📄"
+            icon: FileText
         }
     ];
 
+
     return (
 
-        <div className="grid grid-cols-4 gap-6 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
 
-            {stats.map((stat) => (
+            {stats.map((stat) => {
 
-                <div
-                    key={stat.title}
-                    className="bg-white rounded-[28px] shadow-sm border border-gray-200 p-6 hover:shadow-lg transition"
-                >
+                const Icon = stat.icon;
 
-                    <div className="text-4xl">
-                        {stat.icon}
+                return (
+
+                    <div
+                        key={stat.title}
+                        className="
+                            bg-white
+                            border
+                            border-slate-200
+                            rounded-2xl
+                            px-6
+                            py-5
+                            shadow-sm
+                            hover:shadow-md
+                            transition
+                        "
+                    >
+
+                        <div className="flex items-center justify-between">
+
+                            <p className="
+                                text-sm
+                                font-medium
+                                text-slate-500
+                            ">
+                                {stat.title}
+                            </p>
+
+                            <Icon
+                                size={19}
+                                className="text-slate-400"
+                            />
+
+                        </div>
+
+
+                        <p className="
+                            text-3xl
+                            font-semibold
+                            text-slate-900
+                            mt-3
+                        ">
+                            {stat.value}
+                        </p>
+
                     </div>
 
-                    <h3 className="text-gray-500 mt-4">
-                        {stat.title}
-                    </h3>
+                );
 
-                    <p className="text-3xl font-bold mt-2">
-                        {stat.value}
-                    </p>
-
-                </div>
-
-            ))}
+            })}
 
         </div>
 
     );
+
 }
+
 
 export default DoctorStats;

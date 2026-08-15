@@ -1,3 +1,6 @@
+import { AlertCircle } from "lucide-react";
+
+
 function MedicalAlerts() {
 
     const alerts = [
@@ -23,60 +26,128 @@ function MedicalAlerts() {
         }
     ];
 
+
+    const severityStyles = {
+        Critical: "bg-red-50 text-red-700 border-red-100",
+        High: "bg-orange-50 text-orange-700 border-orange-100",
+        Medium: "bg-amber-50 text-amber-700 border-amber-100"
+    };
+
+
     return (
 
-        <div className="bg-white rounded-[28px] shadow-sm border border-gray-200 p-8">
+        <div className="
+            bg-white
+            border
+            border-slate-200
+            rounded-2xl
+            shadow-sm
+            p-6
+        ">
 
-            <div className="flex justify-between items-center mb-6">
+            {/* Header */}
 
-                <h2 className="text-2xl font-bold text-slate-800">
-                    Medical Alerts
-                </h2>
+            <div className="
+                flex
+                items-start
+                justify-between
+                mb-5
+            ">
 
-                <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm font-semibold">
-                    {alerts.length} Alerts
-                </span>
+                <div>
+
+                    <h2 className="
+                        text-lg
+                        font-semibold
+                        text-slate-900
+                    ">
+                        Medical Alerts
+                    </h2>
+
+                    <p className="
+                        text-sm
+                        text-slate-500
+                        mt-1
+                    ">
+                        Items requiring attention
+                    </p>
+
+                </div>
+
+
+                <AlertCircle
+                    size={20}
+                    className="text-slate-400"
+                />
 
             </div>
 
-            <div className="space-y-5">
+
+            {/* Alerts */}
+
+            <div className="space-y-3">
 
                 {alerts.map((alert, index) => (
 
                     <div
                         key={index}
-                        className="border border-gray-200 rounded-2xl p-5 hover:shadow-md transition"
+                        className="
+                            border
+                            border-slate-100
+                            rounded-xl
+                            px-4
+                            py-3
+                        "
                     >
 
-                        <div className="flex justify-between items-center">
+                        <div className="
+                            flex
+                            items-start
+                            justify-between
+                            gap-3
+                        ">
 
-                            <h3 className="font-semibold text-slate-800">
-                                ⚠ {alert.title}
-                            </h3>
+                            <div>
+
+                                <h3 className="
+                                    text-sm
+                                    font-medium
+                                    text-slate-900
+                                ">
+                                    {alert.title}
+                                </h3>
+
+                                <p className="
+                                    text-xs
+                                    text-slate-500
+                                    mt-1
+                                ">
+                                    {alert.patient}
+                                </p>
+
+                            </div>
+
 
                             <span
-                                className={`px-3 py-1 rounded-full text-xs font-semibold
-                                ${
-                                    alert.severity === "Critical"
-                                        ? "bg-red-100 text-red-700"
-                                        : alert.severity === "High"
-                                        ? "bg-orange-100 text-orange-700"
-                                        : "bg-yellow-100 text-yellow-700"
-                                }`}
+                                className={`
+                                    text-xs
+                                    font-medium
+                                    px-2.5
+                                    py-1
+                                    rounded-md
+                                    border
+                                    whitespace-nowrap
+                                    ${
+                                        severityStyles[
+                                            alert.severity
+                                        ]
+                                    }
+                                `}
                             >
                                 {alert.severity}
                             </span>
 
                         </div>
-
-                        <p className="text-gray-500 mt-3">
-
-                            Patient:
-                            <span className="font-medium text-slate-700">
-                                {" "}{alert.patient}
-                            </span>
-
-                        </p>
 
                     </div>
 
@@ -84,9 +155,31 @@ function MedicalAlerts() {
 
             </div>
 
+
+            {/* Footer */}
+
+            <button
+                className="
+                    w-full
+                    mt-5
+                    pt-4
+                    border-t
+                    border-slate-100
+                    text-sm
+                    font-medium
+                    text-blue-600
+                    hover:text-blue-700
+                    transition
+                "
+            >
+                View all alerts
+            </button>
+
         </div>
 
     );
+
 }
+
 
 export default MedicalAlerts;

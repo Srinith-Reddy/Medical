@@ -5,12 +5,18 @@ import {
     Building2,
     Users,
     Stethoscope,
+    FlaskConical,
     CalendarDays,
     Settings
 } from "lucide-react";
 
 
-function OrganizationSidebar() {
+function OrganizationSidebar({ organizationId }) {
+
+    const storedOrganizationId =
+        organizationId ||
+        localStorage.getItem("organizationId");
+
 
     const menu = [
 
@@ -34,16 +40,27 @@ function OrganizationSidebar() {
         },
 
         {
+            name: "Labs",
+            icon: FlaskConical,
+            path: "/organization/labs"
+        },
+
+        {
             name: "Appointments",
             icon: CalendarDays,
             path: "/organization/appointments"
         },
 
-        {
-            name: "Patients",
-            icon: Users,
-            path: "/organization/patients"
-        },
+        ...(storedOrganizationId
+            ? [
+                {
+                    name: "Patients",
+                    icon: Users,
+                    path: `/organization/${storedOrganizationId}/patients`
+                }
+            ]
+            : []
+        ),
 
         {
             name: "Settings",
@@ -56,17 +73,33 @@ function OrganizationSidebar() {
 
     return (
 
-        <aside className="w-64 bg-white shadow-lg min-h-screen">
+        <aside className="
+            w-64
+            bg-white
+            shadow-lg
+            min-h-screen
+        ">
 
             {/* Logo */}
 
-            <div className="p-6 border-b">
+            <div className="
+                p-6
+                border-b
+            ">
 
-                <h1 className="text-3xl font-bold text-blue-600">
+                <h1 className="
+                    text-3xl
+                    font-bold
+                    text-blue-600
+                ">
                     MedChain
                 </h1>
 
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="
+                    text-sm
+                    text-gray-500
+                    mt-1
+                ">
                     Organization Portal
                 </p>
 
@@ -75,7 +108,11 @@ function OrganizationSidebar() {
 
             {/* Navigation */}
 
-            <nav className="mt-8 space-y-2 px-4">
+            <nav className="
+                mt-8
+                space-y-2
+                px-4
+            ">
 
                 {menu.map((item) => {
 
@@ -124,5 +161,6 @@ function OrganizationSidebar() {
     );
 
 }
+
 
 export default OrganizationSidebar;
