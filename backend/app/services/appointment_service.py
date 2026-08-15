@@ -13,8 +13,9 @@ class AppointmentService:
         appointment_data = {
             "patient_id": patient_id,
             "organization_id": organization_id,
+            "doctor_id": str,
             "appointment_date": appointment_date.isoformat(),
-            "status": status
+            "status": status,
         }
 
         response = (

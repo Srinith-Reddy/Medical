@@ -7,3 +7,4 @@ class AppointmentCreate(BaseModel):
     organization_id: str
     appointment_date: datetime
     status: str = "SCHEDULED"
+    doctor_id: str
