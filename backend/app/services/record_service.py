@@ -126,3 +126,17 @@ class RecordService:
                 hash_matches and blockchain_verified
             )
         }
+
+    @staticmethod
+    def get_records_by_staff(staff_id: str):
+
+        response = (
+            supabase
+            .table("records")
+            .select("*")
+            .eq("staff_id", staff_id)
+            .order("created_at", desc=True)
+            .execute()
+        )
+
+        return response.data
