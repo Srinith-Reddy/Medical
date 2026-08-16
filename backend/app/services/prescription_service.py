@@ -155,3 +155,17 @@ class PrescriptionService:
             })
 
         return result
+
+    @staticmethod
+    def get_prescriptions_by_doctor(doctor_id: str):
+
+        response = (
+            supabase
+            .table("prescriptions")
+            .select("*")
+            .eq("staff_id", doctor_id)
+            .order("created_at", desc=True)
+            .execute()
+        )
+
+        return response.data
