@@ -9,6 +9,6 @@ class AppointmentCreate(BaseModel):
     appointment_date: datetime
     status: str = "SCHEDULED"
 
-
 class AppointmentStatusUpdate(BaseModel):
     status: str
+    doctor_id: str

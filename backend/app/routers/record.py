@@ -50,11 +50,23 @@ def get_patient_records(patient_id: str):
             detail=str(e)
         )
 
-
-@router.get("/{record_id}")
-def get_record(record_id: str):
+@router.get("/staff/{staff_id}")
+def get_records_by_staff(staff_id: str):
     try:
-        return RecordService.get_record(record_id)
+        return RecordService.get_records_by_staff(staff_id)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+
+@router.get("/{record_id}/verify")
+def verify_record(record_id: str):
+
+    try:
+        return RecordService.verify_record(record_id)
 
     except ValueError as e:
         raise HTTPException(
@@ -68,11 +80,11 @@ def get_record(record_id: str):
             detail=str(e)
         )
 
-@router.get("/{record_id}/verify")
-def verify_record(record_id: str):
 
+@router.get("/{record_id}")
+def get_record(record_id: str):
     try:
-        return RecordService.verify_record(record_id)
+        return RecordService.get_record(record_id)
 
     except ValueError as e:
         raise HTTPException(

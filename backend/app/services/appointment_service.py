@@ -20,8 +20,9 @@ class AppointmentService:
             "patient_id": patient_id,
             "doctor_id": doctor_id,
             "organization_id": organization_id,
+            "doctor_id": str,
             "appointment_date": appointment_date.isoformat(),
-            "status": status
+            "status": status,
         }
 
         response = (

@@ -34,6 +34,35 @@ def create_prescription(data: PrescriptionCreate):
             detail=str(e)
         )
 
+
+@router.get("/doctor/{doctor_id}")
+def get_prescriptions_by_doctor(doctor_id: str):
+    try:
+        return PrescriptionService.get_prescriptions_by_doctor(
+            doctor_id
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+
+
+@router.get("/patient/{patient_id}")
+def get_patient_prescriptions(patient_id: str):
+    try:
+        return PrescriptionService.get_patient_prescriptions(patient_id)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+
+
 @router.get("/{prescription_id}")
 def get_prescription(prescription_id: str):
     try:
@@ -46,17 +75,6 @@ def get_prescription(prescription_id: str):
             status_code=404,
             detail=str(e)
         )
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=str(e)
-        )
-
-@router.get("/patient/{patient_id}")
-def get_patient_prescriptions(patient_id: str):
-    try:
-        return PrescriptionService.get_patient_prescriptions(patient_id)
 
     except Exception as e:
         raise HTTPException(
