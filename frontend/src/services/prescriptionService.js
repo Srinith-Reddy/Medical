@@ -13,3 +13,10 @@ export const getPrescriptionById = async (id) => {
     const response = await API.get(`/prescriptions/${id}`);
     return response.data;
 };
+
+export const getDoctorPrescriptions = async (doctorId) => {
+    const response = await API.get(
+        `/prescriptions/doctor/${doctorId}`
+    );
+    return response.data;
+};

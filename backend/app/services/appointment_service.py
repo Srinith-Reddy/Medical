@@ -20,9 +20,8 @@ class AppointmentService:
             "patient_id": patient_id,
             "doctor_id": doctor_id,
             "organization_id": organization_id,
-            "doctor_id": str,
             "appointment_date": appointment_date.isoformat(),
-            "status": status,
+            "status": status
         }
 
         response = (
@@ -50,7 +49,16 @@ class AppointmentService:
         response = (
             supabase
             .table("appointments")
-            .select("*")
+            .select("""
+                *,
+                patient:patients(
+                    id,
+                    name,
+                    phone,
+                    dob,
+                    gender
+                )
+            """)
             .eq("id", appointment_id)
             .single()
             .execute()
@@ -74,7 +82,16 @@ class AppointmentService:
         response = (
             supabase
             .table("appointments")
-            .select("*")
+            .select("""
+                *,
+                patient:patients(
+                    id,
+                    name,
+                    phone,
+                    dob,
+                    gender
+                )
+            """)
             .eq("patient_id", patient_id)
             .order(
                 "appointment_date",
@@ -98,7 +115,16 @@ class AppointmentService:
         response = (
             supabase
             .table("appointments")
-            .select("*")
+            .select("""
+                *,
+                patient:patients(
+                    id,
+                    name,
+                    phone,
+                    dob,
+                    gender
+                )
+            """)
             .eq(
                 "organization_id",
                 organization_id
@@ -125,7 +151,16 @@ class AppointmentService:
         response = (
             supabase
             .table("appointments")
-            .select("*")
+            .select("""
+                *,
+                patient:patients(
+                    id,
+                    name,
+                    phone,
+                    dob,
+                    gender
+                )
+            """)
             .eq(
                 "doctor_id",
                 doctor_id
@@ -161,7 +196,6 @@ class AppointmentService:
                 appointment_id
             )
             .execute()
-
         )
 
         if not response.data:

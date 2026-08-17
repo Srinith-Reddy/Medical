@@ -25,23 +25,39 @@ import AddPrescription from "./pages/prescriptions/AddPrescription";
 import PrescriptionDetails from "./pages/prescriptions/PrescriptionDetails";
 
 import BookAppointment from "./pages/appointments/BookAppointment";
+import DoctorAppointments from "./pages/appointments/DoctorAppointments";
+import DoctorAppointment from "./pages/appointments/DoctorAppointment";
+
 import OrganizationDoctors from "./pages/organization/OrganizationDoctors";
 import OrganizationAppointments from "./pages/organization/OrganizationAppointments";
 import OrganizationPatients from "./pages/organization/OrganizationPatients";
 import OrganizationPatientDetails from "./pages/organization/OrganizationPatientDetails";
 import OrganizationLabs from "./pages/organization/OrganizationLabs";
 
+
 function App() {
+
     return (
+
         <Routes>
 
             {/* Redirect */}
+
             <Route
                 path="/"
-                element={<Navigate to="/patient" replace />}
+                element={
+                    <Navigate
+                        to="/patient"
+                        replace
+                    />
+                }
             />
 
-            {/* Dashboards */}
+
+            {/* -------------------------------------------------- */}
+            {/* DASHBOARDS */}
+            {/* -------------------------------------------------- */}
+
             <Route
                 path="/patient"
                 element={<Dashboard />}
@@ -57,10 +73,46 @@ function App() {
                 element={<LabDashboard />}
             />
 
+
+            {/* -------------------------------------------------- */}
+            {/* APPOINTMENTS */}
+            {/* -------------------------------------------------- */}
+
+            {/* Doctor appointments */}
+
             <Route
-              path="/organization/appointments"
-              element={<OrganizationAppointments />}
+                path="/appointments"
+                element={<DoctorAppointments />}
             />
+
+
+            {/* Doctor consultation */}
+
+            <Route
+                path="/doctor/appointments/:appointmentId"
+                element={<DoctorAppointment />}
+            />
+
+
+            {/* Patient booking */}
+
+            <Route
+                path="/appointments/book"
+                element={<BookAppointment />}
+            />
+
+
+            {/* Organization appointments */}
+
+            <Route
+                path="/organization/appointments"
+                element={<OrganizationAppointments />}
+            />
+
+
+            {/* -------------------------------------------------- */}
+            {/* ORGANIZATION */}
+            {/* -------------------------------------------------- */}
 
             <Route
                 path="/organization"
@@ -77,7 +129,40 @@ function App() {
                 element={<Organizations />}
             />
 
-            {/* Patients */}
+
+            {/* Organization doctors */}
+
+            <Route
+                path="/organization/doctors"
+                element={<OrganizationDoctors />}
+            />
+
+
+            {/* Organization labs */}
+
+            <Route
+                path="/organization/labs"
+                element={<OrganizationLabs />}
+            />
+
+
+            {/* Organization patients */}
+
+            <Route
+                path="/organization/:id/patients"
+                element={<OrganizationPatients />}
+            />
+
+            <Route
+                path="/organization/:id/patients/:patientId"
+                element={<OrganizationPatientDetails />}
+            />
+
+
+            {/* -------------------------------------------------- */}
+            {/* PATIENTS */}
+            {/* -------------------------------------------------- */}
+
             <Route
                 path="/patients"
                 element={<Patients />}
@@ -98,7 +183,11 @@ function App() {
                 element={<PatientProfile />}
             />
 
-            {/* Medical Records */}
+
+            {/* -------------------------------------------------- */}
+            {/* MEDICAL RECORDS */}
+            {/* -------------------------------------------------- */}
+
             <Route
                 path="/records"
                 element={<Records />}
@@ -114,54 +203,51 @@ function App() {
                 element={<RecordDetails />}
             />
 
+
+            {/* -------------------------------------------------- */}
+            {/* MEDICINES */}
+            {/* -------------------------------------------------- */}
+
             <Route
-              path="/medicines"
-              element={<Medicines />}
+                path="/medicines"
+                element={<Medicines />}
             />
 
             <Route
-              path="/medicines/add"
-              element={<AddMedicine />}
+                path="/medicines/add"
+                element={<AddMedicine />}
             />
 
             <Route
-              path="/medicines/:id"
-              element={<MedicineDetails />}
+                path="/medicines/:id"
+                element={<MedicineDetails />}
             />
 
-            <Route path="/prescriptions" element={<Prescriptions />} />
 
-            <Route path="/add-prescription" element={<AddPrescription />} />
-
-            <Route
-              path="/prescriptions/:id"
-              element={<PrescriptionDetails />}
-            />
-
-            <Route path="/appointments/book" element={<BookAppointment />} />
+            {/* -------------------------------------------------- */}
+            {/* PRESCRIPTIONS */}
+            {/* -------------------------------------------------- */}
 
             <Route
-              path="/organization/doctors"
-              element={<OrganizationDoctors />}
+                path="/prescriptions"
+                element={<Prescriptions />}
             />
 
             <Route
-                path="/organization/labs"
-                element={<OrganizationLabs />}
+                path="/add-prescription"
+                element={<AddPrescription />}
             />
 
             <Route
-                path="/organization/:id/patients"
-                element={<OrganizationPatients />}
-            />
-
-            <Route
-                path="/organization/:id/patients/:patientId"
-                element={<OrganizationPatientDetails />}
+                path="/prescriptions/:id"
+                element={<PrescriptionDetails />}
             />
 
         </Routes>
+
     );
+
 }
+
 
 export default App;

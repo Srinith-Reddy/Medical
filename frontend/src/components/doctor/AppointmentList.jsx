@@ -1,25 +1,83 @@
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 
-function AppointmentList() {
+function AppointmentList({
+    appointments = []
+}) {
 
-    const appointments = [
-        {
-            patient: "Aarav Sharma",
-            time: "09:00 AM",
-            type: "General Checkup"
-        },
-        {
-            patient: "Priya Reddy",
-            time: "09:30 AM",
-            type: "Follow-up"
-        },
-        {
-            patient: "Rahul Kumar",
-            time: "10:15 AM",
-            type: "Consultation"
+    const navigate = useNavigate();
+
+
+    // --------------------------------------------------
+    // FORMAT TIME
+    // --------------------------------------------------
+
+    const formatTime = (dateString) => {
+
+        if (!dateString) {
+            return "--";
         }
-    ];
+
+        const date = new Date(dateString);
+
+        return date.toLocaleTimeString(
+            [],
+            {
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+
+    };
+
+
+    // --------------------------------------------------
+    // CHECK IF TODAY
+    // --------------------------------------------------
+
+    const isToday = (dateString) => {
+
+        if (!dateString) {
+            return false;
+        }
+
+        const date = new Date(dateString);
+        const today = new Date();
+
+        return (
+            date.getDate() === today.getDate() &&
+            date.getMonth() === today.getMonth() &&
+            date.getFullYear() === today.getFullYear()
+        );
+
+    };
+
+
+    // --------------------------------------------------
+    // TODAY'S APPOINTMENTS
+    // --------------------------------------------------
+
+    const todaysAppointments =
+        appointments.filter(
+            (appointment) =>
+                isToday(
+                    appointment.appointment_date
+                )
+        );
+
+
+    // --------------------------------------------------
+    // START CONSULTATION
+    // --------------------------------------------------
+
+    const handleStartConsultation = (appointment) => {
+
+        navigate(
+            `/doctor/appointments/${appointment.id}`
+        );
+
+    };
 
 
     return (
@@ -57,11 +115,10 @@ function AppointmentList() {
                         text-slate-500
                         mt-1
                     ">
-                        Your upcoming appointments for today
+                        Your appointments scheduled for today
                     </p>
 
                 </div>
-
 
                 <CalendarDays
                     size={20}
@@ -71,82 +128,221 @@ function AppointmentList() {
             </div>
 
 
+            {/* No appointments */}
+
+            {todaysAppointments.length === 0 && (
+
+                <div className="
+                    py-10
+                    text-center
+                    text-sm
+                    text-slate-500
+                ">
+
+                    No appointments scheduled for today.
+
+                </div>
+
+            )}
+
+
             {/* Appointment List */}
 
-            <div className="divide-y divide-slate-100">
+            {todaysAppointments.length > 0 && (
 
-                {appointments.map((appointment, index) => (
+                <div className="
+                    divide-y
+                    divide-slate-100
+                ">
 
-                    <div
-                        key={index}
-                        className="
-                            flex
-                            items-center
-                            justify-between
-                            py-4
-                            first:pt-0
-                            last:pb-0
-                        "
-                    >
+                    {todaysAppointments.map(
+                        (appointment) => {
 
-                        <div className="flex items-center gap-4">
+                            const patient =
+                                appointment.patient;
 
-                            {/* Time */}
-
-                            <div className="
-                                w-20
-                                text-sm
-                                font-medium
-                                text-slate-700
-                            ">
-                                {appointment.time}
-                            </div>
+                            const status =
+                                appointment.status?.toUpperCase();
 
 
-                            {/* Patient */}
+                            return (
 
-                            <div>
+                                <div
+                                    key={appointment.id}
+                                    className="
+                                        flex
+                                        items-center
+                                        justify-between
+                                        py-4
+                                        first:pt-0
+                                        last:pb-0
+                                    "
+                                >
 
-                                <h3 className="
-                                    text-sm
-                                    font-semibold
-                                    text-slate-900
-                                ">
-                                    {appointment.patient}
-                                </h3>
+                                    {/* Patient information */}
 
-                                <p className="
-                                    text-sm
-                                    text-slate-500
-                                    mt-0.5
-                                ">
-                                    {appointment.type}
-                                </p>
+                                    <div className="
+                                        flex
+                                        items-center
+                                        gap-4
+                                    ">
 
-                            </div>
+                                        <div className="
+                                            w-20
+                                            text-sm
+                                            font-medium
+                                            text-slate-700
+                                        ">
 
-                        </div>
+                                            {formatTime(
+                                                appointment.appointment_date
+                                            )}
+
+                                        </div>
 
 
-                        {/* Status */}
+                                        <div>
 
-                        <span className="
-                            text-xs
-                            font-medium
-                            text-slate-500
-                            bg-slate-100
-                            px-3
-                            py-1.5
-                            rounded-lg
-                        ">
-                            Scheduled
-                        </span>
+                                            <h3 className="
+                                                text-sm
+                                                font-semibold
+                                                text-slate-900
+                                            ">
 
-                    </div>
+                                                {patient?.name ||
+                                                    "Patient"
+                                                }
 
-                ))}
+                                            </h3>
 
-            </div>
+
+                                            <p className="
+                                                text-sm
+                                                text-slate-500
+                                                mt-0.5
+                                            ">
+
+                                                Appointment
+
+                                            </p>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    {/* Right side */}
+
+                                    <div className="
+                                        flex
+                                        items-center
+                                        gap-3
+                                    ">
+
+                                        {/* Status */}
+
+                                        <span className="
+                                            text-xs
+                                            font-medium
+                                            text-slate-600
+                                            bg-slate-100
+                                            px-3
+                                            py-1.5
+                                            rounded-lg
+                                        ">
+
+                                            {appointment.status ||
+                                                "Scheduled"
+                                            }
+
+                                        </span>
+
+
+                                        {/* Start Consultation */}
+
+                                        {status === "SCHEDULED" && (
+
+                                            <button
+                                                onClick={() =>
+                                                    handleStartConsultation(
+                                                        appointment
+                                                    )
+                                                }
+                                                className="
+                                                    inline-flex
+                                                    items-center
+                                                    gap-2
+                                                    px-4
+                                                    py-2
+                                                    rounded-xl
+                                                    bg-blue-600
+                                                    text-white
+                                                    text-sm
+                                                    font-medium
+                                                    hover:bg-blue-700
+                                                    transition
+                                                "
+                                            >
+
+                                                Start Consultation
+
+                                                <ArrowRight
+                                                    size={16}
+                                                />
+
+                                            </button>
+
+                                        )}
+
+
+                                        {/* View Consultation */}
+
+                                        {status === "COMPLETED" && (
+
+                                            <button
+                                                onClick={() =>
+                                                    handleStartConsultation(
+                                                        appointment
+                                                    )
+                                                }
+                                                className="
+                                                    inline-flex
+                                                    items-center
+                                                    gap-2
+                                                    px-4
+                                                    py-2
+                                                    rounded-xl
+                                                    bg-slate-100
+                                                    text-slate-700
+                                                    text-sm
+                                                    font-medium
+                                                    hover:bg-slate-200
+                                                    transition
+                                                "
+                                            >
+
+                                                View Consultation
+
+                                                <ArrowRight
+                                                    size={16}
+                                                />
+
+                                            </button>
+
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+                            );
+
+                        }
+                    )}
+
+                </div>
+
+            )}
 
         </div>
 

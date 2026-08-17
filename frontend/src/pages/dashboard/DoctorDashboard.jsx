@@ -7,18 +7,26 @@ import DoctorHero from "../../components/doctor/DoctorHero";
 import DoctorStats from "../../components/doctor/DoctorStats";
 import AppointmentList from "../../components/doctor/AppointmentList";
 import RecentPatients from "../../components/doctor/RecentPatients";
-import MedicalAlerts from "../../components/doctor/MedicalAlerts";
 
 import { getDoctors } from "../../services/doctorService";
-import { getAllPatients } from "../../services/patientService";
+import { getPatientsByDoctor } from "../../services/patientService";
+import { getDoctorAppointments } from "../../services/appointmentService";
+
+import { getPrescriptionById } from "../../services/prescriptionService";
+import { getPatientRecords } from "../../services/recordService";
+
 
 function DoctorDashboard() {
 
     const [doctor, setDoctor] = useState(null);
     const [patients, setPatients] = useState([]);
+    const [appointments, setAppointments] = useState([]);
+    const [prescriptions, setPrescriptions] = useState([]);
+    const [records, setRecords] = useState([]);
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
 
     const loadDashboardData = async () => {
 
@@ -27,31 +35,37 @@ function DoctorDashboard() {
             setLoading(true);
             setError("");
 
-            /*
-             * Temporary doctor selection.
-             * Later this will come from authentication/login.
-             */
+
+            // -----------------------------------------
+            // GET ORGANIZATION
+            // -----------------------------------------
 
             const organizationId =
                 localStorage.getItem("organizationId");
 
+
             if (!organizationId) {
 
-                setError("Organization information not found.");
+                setError(
+                    "Organization information not found."
+                );
 
                 return;
 
             }
 
-            /*
-             * Get doctors from the existing backend.
-             */
+
+            // -----------------------------------------
+            // GET DOCTORS
+            // -----------------------------------------
 
             const doctorsData =
                 await getDoctors(organizationId);
 
+
             const currentDoctor =
                 doctorsData?.[0];
+
 
             if (!currentDoctor) {
 
@@ -61,24 +75,104 @@ function DoctorDashboard() {
 
             }
 
+
             setDoctor(currentDoctor);
 
 
-            /*
-             * Get existing patients from backend.
-             *
-             * These are REAL patients already stored
-             * in your database.
-             */
+            // -----------------------------------------
+            // GET DOCTOR'S PATIENTS
+            // -----------------------------------------
 
             const patientsData =
-                await getAllPatients();
+                await getPatientsByDoctor(
+                    currentDoctor.id
+                );
 
-            setPatients(
+
+            const doctorPatients =
                 Array.isArray(patientsData)
                     ? patientsData
+                    : [];
+
+
+            setPatients(doctorPatients);
+
+
+            // -----------------------------------------
+            // GET DOCTOR'S APPOINTMENTS
+            // -----------------------------------------
+
+            const appointmentsData =
+                await getDoctorAppointments(
+                    currentDoctor.id
+                );
+
+
+            setAppointments(
+                Array.isArray(appointmentsData)
+                    ? appointmentsData
                     : []
             );
+
+
+            // -----------------------------------------
+            // GET RECORDS FOR DOCTOR'S PATIENTS
+            // -----------------------------------------
+
+            const recordsResults =
+                await Promise.all(
+                    doctorPatients.map(
+                        async (patient) => {
+
+                            try {
+
+                                const data =
+                                    await getPatientRecords(
+                                        patient.id
+                                    );
+
+                                return Array.isArray(data)
+                                    ? data
+                                    : [];
+
+                            } catch (error) {
+
+                                console.error(
+                                    `Failed to load records for patient ${patient.id}:`,
+                                    error
+                                );
+
+                                return [];
+
+                            }
+
+                        }
+                    )
+                );
+
+
+            const allRecords =
+                recordsResults.flat();
+
+
+            setRecords(allRecords);
+
+
+            // -----------------------------------------
+            // PRESCRIPTIONS
+            // -----------------------------------------
+            //
+            // We currently don't have a doctor-level
+            // prescription endpoint either.
+            //
+            // So don't make a broken request here.
+            //
+            // Keep this empty until we connect it
+            // through patients.
+            // -----------------------------------------
+
+            setPrescriptions([]);
+
 
         } catch (error) {
 
@@ -87,9 +181,11 @@ function DoctorDashboard() {
                 error
             );
 
+
             setError(
                 "Unable to load doctor dashboard."
             );
+
 
         } finally {
 
@@ -107,6 +203,10 @@ function DoctorDashboard() {
     }, []);
 
 
+    // -----------------------------------------
+    // LOADING
+    // -----------------------------------------
+
     if (loading) {
 
         return (
@@ -115,7 +215,12 @@ function DoctorDashboard() {
                 sidebar={<DoctorSidebar />}
             >
 
-                <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="
+                    flex
+                    items-center
+                    justify-center
+                    min-h-[60vh]
+                ">
 
                     <p className="text-slate-500">
                         Loading doctor dashboard...
@@ -130,6 +235,10 @@ function DoctorDashboard() {
     }
 
 
+    // -----------------------------------------
+    // ERROR
+    // -----------------------------------------
+
     if (error) {
 
         return (
@@ -138,19 +247,44 @@ function DoctorDashboard() {
                 sidebar={<DoctorSidebar />}
             >
 
-                <div className="bg-white rounded-2xl border border-red-200 p-8 text-center">
+                <div className="
+                    bg-white
+                    rounded-2xl
+                    border
+                    border-red-200
+                    p-8
+                    text-center
+                ">
 
-                    <h2 className="text-lg font-semibold text-slate-900">
+                    <h2 className="
+                        text-lg
+                        font-semibold
+                        text-slate-900
+                    ">
                         Something went wrong
                     </h2>
 
-                    <p className="text-red-600 mt-2">
+
+                    <p className="
+                        text-red-600
+                        mt-2
+                    ">
                         {error}
                     </p>
 
+
                     <button
                         onClick={loadDashboardData}
-                        className="mt-5 px-5 py-2.5 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
+                        className="
+                            mt-5
+                            px-5
+                            py-2.5
+                            rounded-xl
+                            bg-blue-600
+                            text-white
+                            hover:bg-blue-700
+                            transition
+                        "
                     >
                         Try Again
                     </button>
@@ -164,50 +298,37 @@ function DoctorDashboard() {
     }
 
 
+    // -----------------------------------------
+    // DASHBOARD
+    // -----------------------------------------
+
     return (
 
         <DashboardLayout
             sidebar={<DoctorSidebar />}
         >
 
-            {/* Doctor information */}
-
             <DoctorHero
                 doctor={doctor}
             />
 
 
-            {/* Statistics */}
-
             <DoctorStats
-                appointments={0}
+                appointments={appointments.length}
                 patients={patients.length}
-                prescriptions={0}
-                reports={0}
+                prescriptions={prescriptions.length}
+                reports={records.length}
             />
 
 
-            {/* Main dashboard */}
+            <div className="mt-8">
 
-            <div className="grid grid-cols-3 gap-6 mt-8">
-
-                <div className="col-span-2">
-
-                    <AppointmentList />
-
-                </div>
-
-
-                <div>
-
-                    <MedicalAlerts />
-
-                </div>
+                <AppointmentList
+                    appointments={appointments}
+                />
 
             </div>
 
-
-            {/* Existing patients */}
 
             <RecentPatients
                 patients={patients}
@@ -218,5 +339,6 @@ function DoctorDashboard() {
     );
 
 }
+
 
 export default DoctorDashboard;

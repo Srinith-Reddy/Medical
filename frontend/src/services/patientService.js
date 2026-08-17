@@ -35,6 +35,20 @@ export const getPatientsByOrganization = async (organizationId) => {
 };
 
 
+// --------------------------------------------------
+// GET PATIENTS BY DOCTOR
+// --------------------------------------------------
+
+export const getPatientsByDoctor = async (doctorId) => {
+
+    const response = await API.get(
+        `/patients/doctor/${doctorId}`
+    );
+
+    return response.data;
+};
+
+
 export const createPatient = async (patientData) => {
 
     const response = await API.post(

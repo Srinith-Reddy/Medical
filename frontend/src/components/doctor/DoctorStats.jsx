@@ -30,7 +30,7 @@ function DoctorStats({
             icon: ClipboardList
         },
         {
-            title: "Reports",
+            title: "Medical Records",
             value: reports,
             icon: FileText
         }
@@ -39,7 +39,14 @@ function DoctorStats({
 
     return (
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+        <div className="
+            grid
+            grid-cols-1
+            sm:grid-cols-2
+            lg:grid-cols-4
+            gap-4
+            mt-6
+        ">
 
             {stats.map((stat) => {
 
@@ -62,7 +69,11 @@ function DoctorStats({
                         "
                     >
 
-                        <div className="flex items-center justify-between">
+                        <div className="
+                            flex
+                            items-center
+                            justify-between
+                        ">
 
                             <p className="
                                 text-sm

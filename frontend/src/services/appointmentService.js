@@ -68,6 +68,21 @@ export const getOrganizationAppointments = async (organizationId) => {
 
 
 // --------------------------------------------------
+// GET DOCTOR APPOINTMENTS
+// --------------------------------------------------
+
+export const getDoctorAppointments = async (doctorId) => {
+
+    const response = await API.get(
+        `/appointments/doctor/${doctorId}`
+    );
+
+    return response.data;
+
+};
+
+
+// --------------------------------------------------
 // UPDATE APPOINTMENT STATUS
 // --------------------------------------------------
 
