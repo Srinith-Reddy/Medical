@@ -15,9 +15,7 @@ router = APIRouter(
 # --------------------------------------------------
 
 @router.post("")
-def create_consultation(
-    data: ConsultationCreate
-):
+def create_consultation(data: ConsultationCreate):
 
     try:
 
@@ -99,7 +97,7 @@ def get_patient_consultations(
 
 
 # --------------------------------------------------
-# GET STAFF CONSULTATIONS
+# GET STAFF / DOCTOR CONSULTATIONS
 # --------------------------------------------------
 
 @router.get("/staff/{staff_id}")

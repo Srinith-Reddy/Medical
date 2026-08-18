@@ -17,11 +17,6 @@ function PatientSidebar() {
             path: "/patient"
         },
         {
-            name: "Patients",
-            icon: Users,
-            path: "/patients"
-        },
-        {
             name: "Book Appointment",
             icon: CalendarPlus,
             path: "/appointments/book"
@@ -39,7 +34,7 @@ function PatientSidebar() {
         {
             name: "Settings",
             icon: Settings,
-            path: "/settings"
+            path: "/patient/settings"
         }
     ];
 

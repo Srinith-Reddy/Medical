@@ -45,7 +45,7 @@ function DoctorSidebar() {
         {
             name: "Settings",
             icon: Settings,
-            path: "/settings"
+            path: "/doctor/settings"
         }
     ];
 

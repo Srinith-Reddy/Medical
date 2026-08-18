@@ -65,7 +65,7 @@ function OrganizationSidebar({ organizationId }) {
         {
             name: "Settings",
             icon: Settings,
-            path: "/settings"
+            path: "/organization/settings"
         }
 
     ];

@@ -34,6 +34,10 @@ import OrganizationPatients from "./pages/organization/OrganizationPatients";
 import OrganizationPatientDetails from "./pages/organization/OrganizationPatientDetails";
 import OrganizationLabs from "./pages/organization/OrganizationLabs";
 
+import DoctorSettings from "./pages/settings/DoctorSettings";
+import OrganizationSettings from "./pages/settings/OrganizationSettings";
+import PatientSettings from "./pages/settings/PatientSettings";
+
 
 function App() {
 
@@ -241,6 +245,33 @@ function App() {
             <Route
                 path="/prescriptions/:id"
                 element={<PrescriptionDetails />}
+            />
+
+            {/* -------------------------------------------------- */}
+            {/* SETTINGS */}
+            {/* -------------------------------------------------- */}
+
+            {/* Patient Settings */}
+
+            <Route
+                path="/patient/settings"
+                element={<PatientSettings />}
+            />
+
+
+            {/* Doctor Settings */}
+
+            <Route
+                path="/doctor/settings"
+                element={<DoctorSettings />}
+            />
+
+
+            {/* Organization Settings */}
+
+            <Route
+                path="/organization/settings"
+                element={<OrganizationSettings />}
             />
 
         </Routes>
