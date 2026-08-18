@@ -12,4 +12,3 @@ class AppointmentCreate(BaseModel):
 
 class AppointmentStatusUpdate(BaseModel):
     status: str
-    doctor_id: str
