@@ -13,7 +13,6 @@ class ConsultationService:
         patient_id: str,
         staff_id: str,
         organization_id: str,
-        appointment_id: str,
         diagnosis: str,
         notes: str
     ):
