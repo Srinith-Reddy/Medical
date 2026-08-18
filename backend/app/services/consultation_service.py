@@ -13,6 +13,7 @@ class ConsultationService:
         patient_id: str,
         staff_id: str,
         organization_id: str,
+        appointment_id: str,
         diagnosis: str,
         notes: str
     ):
@@ -22,6 +23,7 @@ class ConsultationService:
             "patient_id": patient_id,
             "staff_id": staff_id,
             "organization_id": organization_id,
+            "appointment_id": appointment_id,
             "diagnosis": diagnosis,
             "notes": notes
         }
